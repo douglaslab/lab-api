@@ -1,0 +1,38 @@
+{
+  "name": "douglaslab-inventory-api",
+  "version": "1.0.0",
+  "description": "Inventory management API for Douglas Lab",
+  "main": "app.js",
+  "scripts": {
+    "start": "node --harmony app.js",
+    "test": "mocha --harmony tests",
+    "lint": "eslint .",
+    "dev": "eslint . && node --harmony app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TravelingTechGuy/alpha-dev.git"
+  },
+  "keywords": [
+    "inventory",
+    "lab",
+    "api"
+  ],
+  "author": "Guy Vider",
+  "license": "BSD",
+  "bugs": {
+    "url": "https://github.com/TravelingTechGuy/alpha-dev/issues"
+  },
+  "homepage": "https://github.com/TravelingTechGuy/alpha-dev#readme",
+  "dependencies": {
+    "mongoose": "^4.0.3",
+    "readdir": "0.0.13",
+    "restify": "^3.0.3"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "istanbul": "^0.3.14",
+    "mocha": "^2.2.5",
+    "should": "^6.0.3"
+  }
+}

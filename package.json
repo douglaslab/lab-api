@@ -4,10 +4,10 @@
   "description": "Inventory management API for Douglas Lab",
   "main": "app.js",
   "scripts": {
-    "start": "node --harmony app.js",
+    "start": "node --harmony server.js",
     "test": "mocha --harmony tests",
     "lint": "eslint .",
-    "dev": "eslint . && node --harmony app.js"
+    "dev": "eslint . && node --harmony server.js"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
     "gulp": "^3.8.11",
     "istanbul": "^0.3.14",
     "mocha": "^2.2.5",
-    "should": "^6.0.3"
+    "should": "^6.0.3",
+    "supertest": "^1.0.1"
   }
 }

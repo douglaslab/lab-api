@@ -23,10 +23,13 @@ server.use(restify.acceptParser(server.acceptable))
 
 //return message when hitting root
 server.get('/', (req, res) => {
+  //TODO: change to 404 or 401
   let recentVersion = Array.isArray(server.versions) ? server.versions[server.versions.length - 1] : server.versions;
-  res.send({message: 'Welcome to ' + server.name + ' version ' + recentVersion});
+  res.send(200, {message: 'Welcome to ' + server.name + ' version ' + recentVersion});
 });
 
 server.listen(process.env.PORT || 3000, () => {
-  console.log('%s listening at %s', server.name, server.url);
+  console.log('%s listening at %s', server.name, server.url.replace('[::]', 'localhost'));
 });
+
+module.exports = server;

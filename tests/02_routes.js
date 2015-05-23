@@ -4,6 +4,12 @@ var request = require('supertest');
 var should = require('should');
 
 describe('Basic API tests', () => {
+  it('should return 404 error', (done) => {
+    request(process.env.TEST_URL)
+      .get('/blahblah')
+      .expect(404, done);
+  });
+
   it('should return default message at root', (done) => {
     request(process.env.TEST_URL)
       .get('/')

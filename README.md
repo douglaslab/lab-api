@@ -28,7 +28,7 @@ $ cd alpha-dev
 $ npm i
 ```
 
-### Run the service
+## Running the service
 
 1. To run the service, type `npm start`.
 1. To run the service continuously for development, type `nodemon`.
@@ -36,3 +36,4 @@ $ npm i
 1. To lint the code, type `npm run lint`.
 1. To start the server, after linting, type `npm run dev`.
 1. Once the server is running, open a browser, and browse to [localhost:3000](http://localhost:3000).
+1. I recommend getting a REST client for your browser (like [Advanced Rest client](https://chrome.google.com/webstore/detail/advanced-rest-client/hgmloofddffdnphfgcellkdfbfbjeloo/reviews?hl=en-US) for Chrome), to test the rest of the API.

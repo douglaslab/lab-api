@@ -2,7 +2,7 @@
   "name": "douglaslab-inventory-api",
   "version": "1.0.0",
   "description": "Inventory management API for Douglas Lab",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "start": "node --harmony server.js",
     "test": "mocha --harmony tests",

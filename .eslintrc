@@ -10,7 +10,7 @@
     "camelcase": [2, {"properties": "always"}],
     "strict": [2, "global"],
     "eqeqeq": [2, "smart"],
-    "curly": [2, "multi"],
+    "curly": [2, "all"],
     "no-spaced-func": 2,
     "no-unused-vars": 2
   }

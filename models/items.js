@@ -13,12 +13,13 @@ var handleError = function(res, err) {
 };
 
 exports.findAll = function(req, res, next) {
-  ItemModel.find((err, items) => {
+  ItemModel.find({}, (err, items) => {
     if (err) {
       handleError(res, err);
     }
     else {
-      res.json(200, {error: false, data: items});
+      var result = items.map(x => x.toObject());
+      res.json(200, {error: false, data: result});
     }
     return next();
   });
@@ -31,7 +32,7 @@ exports.findOne = function(req, res, next) {
     }
     else {
       if (item) {
-        res.json(200, {error: false, data: item});
+        res.json(200, {error: false, data: item.toObject()});
       }
       else {
         res.json(404, {error: true, data: 'Item: ' + req.params.id + ' not found'});

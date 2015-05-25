@@ -5,6 +5,6 @@ module.exports = function(server) {
   server.get('/items', items.findAll);
   server.get('/items/:id', items.findOne);
   server.post('/items', items.create);
-  server.put('/items/:/id', items.update);
-  server.del('/items/:/id', items.delete);
+  server.put('/items/:id', items.update);
+  server.del('/items/:id', items.delete);
 };

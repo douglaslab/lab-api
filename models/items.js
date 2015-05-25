@@ -7,15 +7,15 @@ var ItemSchema = require('./schemas/item');
 var ItemModel = mongoose.model('Item', ItemSchema);
 var ObjectId = mongoose.Types.ObjectId;
 
-var handleError = function(res, err) {
+var handleError = function(errorCode, err, res) {
   debug(err);
-  res.json(500, {error: true, data: 'Error occured: ' + err});
+  res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
 };
 
 exports.findAll = function(req, res, next) {
   ItemModel.find({}, (err, items) => {
-    if (err) {
-      handleError(res, err);
+    if(err) {
+      handleError(500, err, res);
     }
     else {
       var result = items.map(x => x.toObject());
@@ -27,15 +27,15 @@ exports.findAll = function(req, res, next) {
 
 exports.findOne = function(req, res, next) {
   ItemModel.findById(new ObjectId(req.params.id), (err, item) => {
-    if (err) {
-      handleError(res, err);
+    if(err) {
+      handleError(500, err, res);
     }
     else {
-      if (item) {
+      if(item) {
         res.json(200, {error: false, data: item.toObject()});
       }
       else {
-        res.json(404, {error: true, data: 'Item: ' + req.params.id + ' not found'});
+        handleError(404, 'Item: ' + req.params.id + ' not found', res);
       }
     }
     return next();
@@ -43,41 +43,62 @@ exports.findOne = function(req, res, next) {
 };
 
 exports.create = function(req, res, next) {
-  var newItem = new ItemModel(req.body);
+  //verify input is a
+  if(typeof req.body !== 'object') {
+    handleError(400, 'malformed input', res);
+    return next();
+  }
+  var newItem = new ItemModel({properties: req.body});
   newItem.save((err, item) => {
-    if (err) {
-      handleError(res, err);
+    if(err) {
+      handleError(500, err, res);
     }
     else {
-      res.json(201, {error: false, data: item});
+      res.json(201, {error: false, data: item.toObject()});
     }
     return next();
   });
 };
 
 exports.update = function(req, res, next) {
-  var updatedItem = new ItemModel(req.body);
-  updatedItem.modified = Date.now();
-  ItemModel.findByIdAndUpdate(new ObjectId(req.params.id), updatedItem, (err, item) => {
-    if (err) {
-      handleError(res, err);
+  if(typeof req.body !== 'object') {
+    handleError(400, 'malformed input', res);
+    return next();
+  }
+  ItemModel.findById(new ObjectId(req.params.id), (err, item) => {
+    if(err) {
+      handleError(500, err, res);
     }
     else {
-      if (item) {
-        res.json(200, {error: false, data: item});
+      if(item) {
+        item.modified = Date.now();
+        for(let field of Object.keys(req.body)) {
+          item.properties[field] = req.body[field];
+        }
+        item.markModified('properties');
+        item.save((err2, newItem) => {
+          if(err2) {
+            handleError(500, err2, res);
+          }
+          else {
+            console.log(newItem)
+            res.json(200, {error: false, data: newItem.toObject()});
+          }
+          return next();
+        });
       }
       else {
-        res.json(404, {error: true, data: 'Article: ' + req.params.id + ' not found'});
+        handleError(404, 'Article: ' + req.params.id + ' not found', res);
+        return next();
       }
     }
-    return next();
   });
 };
 
 exports.delete = function(req, res, next) {
   ItemModel.findByIdAndRemove(new ObjectId(req.params.id), (err, item) => {
     if(err) {
-      handleError(res, err);
+      handleError(500, err, res);
     }
     else {
       res.json(200, {error: false, data: 'Item ' + item.id + ' deleted successfully'});

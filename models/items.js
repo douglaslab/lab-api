@@ -81,7 +81,6 @@ exports.update = function(req, res, next) {
             handleError(500, err2, res);
           }
           else {
-            console.log(newItem)
             res.json(200, {error: false, data: newItem.toObject()});
           }
           return next();

@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/TravelingTechGuy/alpha-dev#readme",
   "dependencies": {
+    "debug": "^2.2.0",
     "mongoose": "^4.0.3",
     "readdir": "0.0.13",
     "restify": "^3.0.3"

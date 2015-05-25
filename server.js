@@ -2,6 +2,7 @@
 
 var restify = require('restify');
 var config = require('./configs/service');
+var itemsRoutes = require('./routes/items');
 var server = restify.createServer({
   name: config.name,
   version: config.version
@@ -27,6 +28,8 @@ server.get('/', (req, res) => {
   let recentVersion = Array.isArray(server.versions) ? server.versions[server.versions.length - 1] : server.versions;
   res.send(200, {message: 'Welcome to ' + server.name + ' version ' + recentVersion});
 });
+
+itemsRoutes(server);
 
 server.listen(process.env.PORT || 3000, () => {
   console.log('%s listening at %s', server.name, server.url.replace('[::]', 'localhost'));

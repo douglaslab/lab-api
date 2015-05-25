@@ -1,5 +1,6 @@
 {
   "development": {
-    "connection": "localhost/dlab"
+    "name": "Local dev db",
+    "connection": "mongodb://localhost/dlab"
   }
 }

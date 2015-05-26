@@ -42,4 +42,4 @@ $ npm i
 
 - [Restify](http://mcavage.me/node-restify/) - framework for RESTful services
 - [Mongoose](http://mongoosejs.com/index.html) - ODM for MongoDB
-- [Mocha](mochajs.org) + [SuperTest](https://www.npmjs.com/package/supertest) + [Should](https://www.npmjs.com/package/should) - for a mixture of TDD and BDD testing
+- [Mocha](http://mochajs.org) + [SuperTest](https://www.npmjs.com/package/supertest) + [Should](https://www.npmjs.com/package/should) - for a mixture of TDD and BDD testing

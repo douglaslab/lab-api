@@ -11,7 +11,7 @@ describe('Items tests', () => {
     image: 'balance.png'
   };
 
-  it('should create a new item', (done) => {
+  it('should Create a new item', (done) => {
     request(process.env.TEST_URL)
       .post('/items')
       .send(newItem)
@@ -30,7 +30,7 @@ describe('Items tests', () => {
       });
   });
 
-  it('should retrieve the created item', (done) => {
+  it('should Retrieve the created item', (done) => {
     request(process.env.TEST_URL)
       .get('/items/' + id)
       .expect('Content-Type', /json/)
@@ -48,7 +48,23 @@ describe('Items tests', () => {
       });
   });
 
-  it('should update the created item', (done) => {
+  it('should Retrieve all items', (done) => {
+    request(process.env.TEST_URL)
+      .get('/items')
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        res.body.data.should.be.an.instanceOf(Array);
+        res.body.data.filter(item => item.id === id).should.have.lengthOf(1);
+        return done();
+      });
+  });
+
+  it('should Update the created item', (done) => {
     newItem.name = 'updated';
     request(process.env.TEST_URL)
       .put('/items/' + id)
@@ -68,7 +84,7 @@ describe('Items tests', () => {
       });
   });
 
-  it('should delete the created item', (done) => {
+  it('should Delete the created item', (done) => {
     request(process.env.TEST_URL)
       .del('/items/' + id)
       .expect('Content-Type', /json/)

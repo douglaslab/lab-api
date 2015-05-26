@@ -1,5 +1,5 @@
 # DLIMS
-This is a RESTful API for Douglas Lab Inventory Management System.
+A RESTful API for Douglas Lab Inventory Management System.
 
 ## Installation
 
@@ -37,3 +37,9 @@ $ npm i
 1. To start the server, after linting, type `npm run dev`.
 1. Once the server is running, open a browser, and browse to [localhost:3000](http://localhost:3000).
 1. I recommend getting a REST client for your browser (like [Advanced Rest client](https://chrome.google.com/webstore/detail/advanced-rest-client/hgmloofddffdnphfgcellkdfbfbjeloo/reviews?hl=en-US) for Chrome), to test the rest of the API.
+
+## Technology stack
+
+- [Restify](http://mcavage.me/node-restify/) - framework for RESTful services
+- [Mongoose](http://mongoosejs.com/index.html) - ODM for MongoDB
+- [Mocha](mochajs.org) + [SuperTest](https://www.npmjs.com/package/supertest) + [Should](https://www.npmjs.com/package/should) - for a mixture of TDD and BDD testing

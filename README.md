@@ -25,6 +25,7 @@ Instruction on how to start using MongoDB can be found [here](http://docs.mongod
 ```console
 $ git clone git@github.com:<your github user name>/alpha-dev.git
 $ cd alpha-dev
+$ #if you want to build the dev branch, run git checkout dev
 $ npm i
 ```
 

@@ -19,13 +19,16 @@
     "api"
   ],
   "author": "Guy Vider",
-  "license": "BSD",
+  "license": "BSD-3-Clause",
   "bugs": {
     "url": "https://github.com/TravelingTechGuy/alpha-dev/issues"
   },
   "homepage": "https://github.com/TravelingTechGuy/alpha-dev#readme",
   "dependencies": {
+    "async": "^1.0.0",
+    "bcrypt": "^0.8.3",
     "debug": "^2.2.0",
+    "lodash": "^3.9.3",
     "mongoose": "^4.0.3",
     "readdir": "0.0.13",
     "restify": "^3.0.3"

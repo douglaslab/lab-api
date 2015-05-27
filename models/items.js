@@ -6,24 +6,11 @@ var ItemsModel = function(mongoose) {
   var ItemModel = require('./schemas/item');
   var ObjectId = mongoose.Types.ObjectId;
 
-  /**
-   * Return JSON error message
-   * @param  {Number} errorCode HTTP error code
-   * @param  {Object} err The error string, or error object
-   * @param  {Object} res Response object
-   */
   var handleError = function(errorCode, err, res) {
     debug(err);
     res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
   };
 
-  /**
-   * [findAll description]
-   * @param  {[type]}
-   * @param  {[type]}
-   * @param  {Function}
-   * @return {[type]}
-   */
   this.findAll = function(req, res, next) {
     ItemModel.find({}, (err, items) => {
       if(err) {

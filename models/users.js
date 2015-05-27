@@ -4,6 +4,7 @@ var debug = require('debug')('users:model');
 
 var UsersModel = function() {
   var UserModel = require('./schemas/user');
+  var security = require('./security');
 
   /**
    * Return JSON error message
@@ -59,6 +60,8 @@ var UsersModel = function() {
       return next();
     }
     var newUser = new UserModel(req.body);
+    newUser.apiKey = security.getRandomBytes(64);
+    newUser.apiSecret = security.getRandomBytes(64);
     newUser.save((err, user) => {
       if(err) {
         handleError(500, err, res);

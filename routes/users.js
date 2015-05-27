@@ -1,8 +1,7 @@
 'use strict';
 
-module.exports = function(server, mongoose) {
-  var UsersModel = require('../models/users');
-  var users = new UsersModel(mongoose);
+module.exports = function(server) {
+  var users = require('../models/users');
   server.get('/users', users.findAll);
   server.get('/users/:email', users.findOne);
   server.post('/users', users.create);

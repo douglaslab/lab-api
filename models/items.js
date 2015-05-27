@@ -1,10 +1,11 @@
 'use strict';
 
 var debug = require('debug')('items:model');
+var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 
-var ItemsModel = function(mongoose) {
+var ItemsModel = function() {
   var ItemModel = require('./schemas/item');
-  var ObjectId = mongoose.Types.ObjectId;
+  var ObjectId = require('mongoose').Types.ObjectId;
 
   var handleError = function(errorCode, err, res) {
     debug(err);
@@ -34,7 +35,7 @@ var ItemsModel = function(mongoose) {
           res.json(200, {error: false, data: item.toObject()});
         }
         else {
-          handleError(404, 'Item: ' + req.params.id + ' not found', res);
+          handleError(404, util.format('Item: %s not found', req.params.id), res);
         }
       }
       return next();
@@ -42,7 +43,7 @@ var ItemsModel = function(mongoose) {
   };
 
   this.create = function(req, res, next) {
-    //verify input is a
+    //verify input is an object
     if(typeof req.body !== 'object') {
       handleError(400, 'malformed input', res);
       return next();
@@ -60,6 +61,7 @@ var ItemsModel = function(mongoose) {
   };
 
   this.update = function(req, res, next) {
+    //verify input is an object
     if(typeof req.body !== 'object') {
       handleError(400, 'malformed input', res);
       return next();
@@ -86,7 +88,7 @@ var ItemsModel = function(mongoose) {
           });
         }
         else {
-          handleError(404, 'Item: ' + req.params.id + ' not found', res);
+          handleError(404, util.format('Item: %s not found', req.params.id), res);
         }
         return next();
       }
@@ -100,10 +102,10 @@ var ItemsModel = function(mongoose) {
       }
       else {
         if(item) {
-          res.json(200, {error: false, data: 'Item ' + item.id + ' deleted successfully'});
+          res.json(200, {error: false, data: util.format('Item %s deleted successfully', item.id)});
         }
         else {
-          handleError(404, 'Item: ' + req.params.id + ' not found', res);
+          handleError(404, util.format('Item: %s not found', req.params.id), res);
         }
       }
       return next();
@@ -111,4 +113,4 @@ var ItemsModel = function(mongoose) {
   };
 };
 
-module.exports = ItemsModel;
+module.exports = new ItemsModel();

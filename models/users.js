@@ -1,29 +1,23 @@
 'use strict';
 
 var debug = require('debug')('users:model');
+var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 
 var UsersModel = function() {
   var UserModel = require('./schemas/user');
-  var security = require('./security');
 
-  /**
-   * Return JSON error message
-   * @param  {Number} errorCode HTTP error code
-   * @param  {Object} err The error string, or error object
-   * @param  {Object} res Response object
-   */
   var handleError = function(errorCode, err, res) {
     debug(err);
     res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
   };
 
-  /**
-   * [findAll description]
-   * @param  {[type]}
-   * @param  {[type]}
-   * @param  {Function}
-   * @return {[type]}
-   */
+  var parseHeader = function(header) {
+    //header to be parsed looks like: 'X-API-Authorization: key=%key, token=%token, ts=%timestamp'
+    var result = {};
+    header.replace(new RegExp('([^?=,]+)(=([^,]*))?', 'g'), ($0, $1, $2, $3) => { result[$1.trim()] = $3.trim(); });
+    return result;
+  };
+
   this.findAll = function(req, res, next) {
     UserModel.find({}, {sort: 'name'}, (err, users) => {
       if(err) {
@@ -46,7 +40,51 @@ var UsersModel = function() {
           res.json(200, {error: false, data: user});
         }
         else {
-          handleError(404, 'user: ' + req.params.id + ' not found', res);
+          handleError(404, util.format('user: %s not found', req.params.id), res);
+        }
+      }
+      return next();
+    });
+  };
+
+  this.validateUser = function(req, res, next) {
+    var header = parseHeader(req.headers['X-API-Authrization']);
+    UserModel.findOne({apiKey: header.key}, (err, user) => {
+      if(err) {
+        handleError(500, err, res);
+      }
+      else {
+        if(user) {
+          if(user.validateToken(header.token, header.ts)) {
+            return next();
+          }
+          else {
+            handleError(401, 'incorrect token in X-API-Authrization', res);
+          }
+        }
+        else {
+          handleError(404, util.format('user with key: %s not found', header.key), res);
+        }
+      }
+    });
+  };
+
+  this.login = function(req, res, next) {
+    UserModel.find({email: req.body.email}, (err, user) => {
+      if(err) {
+        handleError(500, err, res);
+      }
+      else {
+        if(user) {
+          if(user.validatePassword(req.params.password)) {
+            res.json(200, {error: false, data: user});
+          }
+          else {
+            handleError(401, 'incorrect password', res);
+          }
+        }
+        else {
+          handleError(404, ('user: %s not found', req.body.email), res);
         }
       }
       return next();
@@ -54,14 +92,12 @@ var UsersModel = function() {
   };
 
   this.create = function(req, res, next) {
-    //verify input is a
+    //verify input is an object
     if(typeof req.body !== 'object') {
       handleError(400, 'malformed input', res);
       return next();
     }
     var newUser = new UserModel(req.body);
-    newUser.apiKey = security.getRandomBytes(64);
-    newUser.apiSecret = security.getRandomBytes(64);
     newUser.save((err, user) => {
       if(err) {
         handleError(500, err, res);
@@ -88,7 +124,7 @@ var UsersModel = function() {
           res.json(200, {error: false, data: updatedUser});
         }
         else {
-          handleError(404, 'User: ' + req.params.email + ' not found', res);
+          handleError(404, util.format('User: %s not found', req.params.email), res);
         }
       }
       return next();
@@ -102,10 +138,10 @@ var UsersModel = function() {
       }
       else {
         if(user) {
-          res.json(200, {error: false, data: 'user ' + user.email + ' deleted successfully'});
+          res.json(200, {error: false, data: util.format('user %s deleted successfully', user.email)});
         }
         else {
-          handleError(404, 'User: ' + req.params.email + ' not found', res);
+          handleError(404, util.format('User: %s not found', req.params.email), res);
         }
       }
       return next();
@@ -113,4 +149,4 @@ var UsersModel = function() {
   };
 };
 
-module.exports = UsersModel;
+module.exports = new UsersModel();

@@ -1,6 +1,6 @@
 'use strict';
 
-before((done) => {
+module.exports = function(done) {
   if(!process.env.TEST_URL) {
     var server = require('../server');
     //give the server 1/2 a second to start
@@ -9,4 +9,7 @@ before((done) => {
       done();
     }, 500);
   }
-});
+  else {
+    done();
+  }
+};

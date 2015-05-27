@@ -1,7 +1,10 @@
 'use strict';
 
+var debug = require('debug')('test:server');
 var request = require('supertest');
 var should = require('should');
+
+before((done) => require('./startServer.js')(done));
 
 describe('Basic API tests', () => {
   it('should return 404 error', (done) => {
@@ -18,6 +21,7 @@ describe('Basic API tests', () => {
       .end((err, res) => {
         should.not.exist(err);
         res.body.should.have.property('message');
+        debug(res.body);
         return done();
       });
   });

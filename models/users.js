@@ -1,10 +1,11 @@
 'use strict';
 
-var debug = require('debug')('users:model');
+var debug = require('debug')('users');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 
 var UsersModel = function() {
   var UserModel = require('./schemas/user');
+  var security = require('./security');
 
   var handleError = function(errorCode, err, res) {
     debug(err);
@@ -70,13 +71,19 @@ var UsersModel = function() {
   };
 
   this.login = function(req, res, next) {
-    UserModel.find({email: req.body.email}, (err, user) => {
+    var email = req.authorization.basic.username;
+    var password = req.authorization.basic.password;
+    if(!email || !password) {
+      handleError(401, 'incorrect email/password', res);
+      return next();
+    }
+    UserModel.findOne({email: email}, (err, user) => {
       if(err) {
         handleError(500, err, res);
       }
       else {
         if(user) {
-          if(user.validatePassword(req.params.password)) {
+          if(security.validatePassword(password, user.password)) {
             res.json(200, {error: false, data: user});
           }
           else {
@@ -93,17 +100,26 @@ var UsersModel = function() {
 
   this.create = function(req, res, next) {
     //verify input is an object
-    if(typeof req.body !== 'object') {
+    var newUser = req.body;
+    if(typeof newUser !== 'object') {
       handleError(400, 'malformed input', res);
       return next();
     }
-    var newUser = new UserModel(req.body);
+    newUser.password = security.hashPassword(req.body.password);
+    newUser.apiKey = security.getRandomBytes(32);
+    newUser.apiSecret = security.getRandomBytes(32);
+    newUser = new UserModel(newUser);
     newUser.save((err, user) => {
       if(err) {
-        handleError(500, err, res);
+        if(err.message.contains('duplicate')) {
+          handleError(400, util.format('user with email %s already exists', newUser.email), res);
+        }
+        else {
+          handleError(500, err, res);
+        }
       }
       else {
-        res.json(201, {error: false, data: user});
+        res.json(201, {error: false, data: user.toObject()});
       }
       return next();
     });

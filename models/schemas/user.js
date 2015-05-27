@@ -12,7 +12,7 @@ var UserSchema = new Schema({
     password: {type: String, required: true},
     apiKey: {type: String, required: true},
     apiSecret: {type: String, required: true},
-    permissionLevel: {type: String, required: true, enum: ['USER', 'MANAGER', 'ADMIN']},
+    permissionLevel: {type: String, required: true, enum: ['USER', 'MANAGER', 'ADMIN'], default: 'USER'},
     created: {type: Date, default: Date.now},
     modified: {type: Date, default: Date.now}
   }, {
@@ -21,32 +21,14 @@ var UserSchema = new Schema({
       //remove the _id and __v of every document before returning the result
       delete ret._id;
       delete ret.__v;
-      delete ret.password;
+      //delete ret.password;
     }
   }
 });
 
-UserSchema.pre('save', (next) => {
-  if(this.isModified('password')) {
-    this.password = security.hashPassword(this.password);
-  }
-
-  if(this.isModified('apiKey')) {
-    this.apiKey = security.security.getRandomBytes(64);
-  }
-
-  if(this.isModified('apiSecret')) {
-    this.apiSecret = security.security.getRandomBytes(64);
-  }
-  next();
-});
-
-UserSchema.methods.validatePassword = function(candidatePassword) {
-  return security.validatePassword(candidatePassword, this.password);
-};
 
 UserSchema.methods.validateToken = function(token, timestamp) {
   return security.validateToken(token, this.apiKey, this.apiSecret, timestamp);
 };
 
-module.exports = UserSchema;
+module.exports = mongoose.model('User', UserSchema);

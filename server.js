@@ -18,9 +18,9 @@ server.use((req, res, next) => {
 
 //Server helpers
 server.use(restify.acceptParser(server.acceptable))
-  .use(restify.queryParser())
-  .use(restify.authorizationParser())
+  .use(restify.queryParser({mapParams: false}))
   .use(restify.bodyParser({mapParams: false}))
+  .use(restify.authorizationParser())
   .use(restify.fullResponse())
   .pre(restify.pre.sanitizePath());
 
@@ -38,6 +38,7 @@ mongoose.connection.on('open', () => {
   debug('Connected to db: %s:%s', mongoose.connections[0].host, mongoose.connections[0].port);
   //only add routes if db is connected
   require('./routes/items')(server);
+  require('./routes/users')(server);
 });
 
 

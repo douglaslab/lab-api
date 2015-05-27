@@ -7,4 +7,5 @@ module.exports = function(server) {
   server.post('/users', users.create);
   server.put('/users/:email', users.update);
   server.del('/users/:email', users.delete);
+  server.post('/users/login', users.login);
 };

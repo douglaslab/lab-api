@@ -1,6 +1,6 @@
 'use strict';
 
-var debug = require('debug')('items:model');
+var debug = require('debug')('items');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 
 var ItemsModel = function() {

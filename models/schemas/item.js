@@ -6,9 +6,9 @@ var baseImageUrl = require('../../configs/').images.baseUrl;
 
 var ItemSchema = new Schema({
     version: {type: String, default: '1.0.0'},
+    properties: Schema.Types.Mixed,
     created: {type: Date, default: Date.now},
-    modified: {type: Date, default: Date.now},
-    properties: Schema.Types.Mixed
+    modified: {type: Date, default: Date.now}
   }, {
   toObject: {
     transform: (doc, ret) => {
@@ -25,4 +25,4 @@ var ItemSchema = new Schema({
   }
 });
 
-module.exports = ItemSchema;
+module.exports = mongoose.model('Item', ItemSchema);

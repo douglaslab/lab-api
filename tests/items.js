@@ -1,5 +1,6 @@
 'use strict';
 
+var debug = require('debug')('test:items');
 var request = require('supertest');
 var should = require('should');
 
@@ -26,6 +27,7 @@ describe('Items tests', () => {
         res.body.data.should.have.property('properties');
         res.body.data.properties.name.should.equal(newItem.name);
         id = res.body.data.id;
+        debug(res);
         return done();
       });
   });
@@ -44,6 +46,7 @@ describe('Items tests', () => {
         res.body.data.should.have.property('properties');
         res.body.data.properties.name.should.equal(newItem.name);
         res.body.data.id.should.equal(id);
+        debug(res);
         return done();
       });
   });
@@ -60,6 +63,7 @@ describe('Items tests', () => {
         res.body.should.have.property('data');
         res.body.data.should.be.an.instanceOf(Array);
         res.body.data.filter(item => item.id === id).should.have.lengthOf(1);
+        debug(res);
         return done();
       });
   });
@@ -80,6 +84,7 @@ describe('Items tests', () => {
         res.body.data.should.have.property('properties');
         res.body.data.properties.name.should.equal(newItem.name);
         id = res.body.data.id;
+        debug(res);
         return done();
       });
   });
@@ -93,6 +98,7 @@ describe('Items tests', () => {
         should.not.exist(err);
         res.body.should.have.property('error');
         res.body.error.should.be.false;
+        debug(res);
         return done();
       });
   });

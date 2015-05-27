@@ -3,6 +3,7 @@
 var restify = require('restify');
 var config = require('./configs/service');
 var itemsRoutes = require('./routes/items');
+var mongoose = require('./models/db');
 var server = restify.createServer({
   name: config.name,
   version: config.version
@@ -18,18 +19,19 @@ server.use((req, res, next) => {
 //Server helpers
 server.use(restify.acceptParser(server.acceptable))
   .use(restify.queryParser())
-  .use(restify.bodyParser())
+  .use(restify.authorizationParser())
+  .use(restify.bodyParser({mapParams: false}))
   .use(restify.fullResponse())
   .pre(restify.pre.sanitizePath());
 
-//return message when hitting root
+//TODO: REMOVE THIS return message when hitting root
 server.get('/', (req, res) => {
   //TODO: change to 404 or 401
   let recentVersion = Array.isArray(server.versions) ? server.versions[server.versions.length - 1] : server.versions;
   res.send(200, {message: 'Welcome to ' + server.name + ' version ' + recentVersion});
 });
 
-itemsRoutes(server);
+itemsRoutes(server, mongoose);
 
 server.listen(process.env.PORT || 3000, () => {
   console.log('%s listening at %s', server.name, server.url.replace('[::]', 'localhost'));

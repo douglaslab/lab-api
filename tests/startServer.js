@@ -1,5 +1,7 @@
 'use strict';
 
+//helper function to start the service for tests
+//The environment variable makes it reentrant
 module.exports = function(done) {
   if(!process.env.TEST_URL) {
     var server = require('../server');

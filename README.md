@@ -11,7 +11,7 @@ You can either install them directly from their sites, or using a package manage
 1. Install [Git](http://git-scm.com/downloads).
 1. Install Node and NPM from the [site](https://nodejs.org/download/) or [package manager](https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager).
 1. Install [MongoDB](http://www.mongodb.org/downloads).
-1. Install the following modules globally: eslint, mocha, npmlist, nodemon
+1. Install the following modules globally: eslint, mocha, npmlist, jsdoc, nodemon
 ```console
 $ npm i -g eslint mocha npmlist nodemon  #you may need to use sudo
 ```
@@ -31,13 +31,17 @@ $ npm i
 
 ## Running the service
 
-1. To run the service, type `npm start`.
+1. To run the service, type `npm start` (or `npm run dev` to lint the code prior to running).
 1. To run the service continuously for development, type `nodemon`.
-1. To run tests, type `npm test`.
-1. To lint the code, type `npm run lint`.
-1. To start the server, after linting, type `npm run dev`.
 1. Once the server is running, open a browser, and browse to [localhost:3000](http://localhost:3000).
-1. I recommend getting a REST client for your browser (like [Advanced Rest client](https://chrome.google.com/webstore/detail/advanced-rest-client/hgmloofddffdnphfgcellkdfbfbjeloo/reviews?hl=en-US) for Chrome), to test the rest of the API.
+1. Use a REST client for your browser (like [Advanced Rest client](https://chrome.google.com/webstore/detail/advanced-rest-client/hgmloofddffdnphfgcellkdfbfbjeloo/reviews?hl=en-US) for Chrome), to test the rest of the API.
+
+## Testing, linting, documentation
+
+1. To run all tests, type `npm test`.
+1. To run a specific test, type `mocha --harmony tests/<test name>`.
+1. To lint the code, type `npm run lint`.
+1. To generate documentation, type `npm run doc` and then open [docs/index.html](./docs/index.html) in your browser.
 
 ## Technology stack
 
@@ -46,3 +50,4 @@ $ npm i
 - [Restify](http://mcavage.me/node-restify/) - framework for RESTful services.
 - [Mongoose](http://mongoosejs.com/index.html) - ODM for MongoDB.
 - [Mocha](http://mochajs.org) + [SuperTest](https://www.npmjs.com/package/supertest) + [Should](https://www.npmjs.com/package/should) - for a mixture of TDD and BDD testing.
+- [JSDoc](http://usejsdoc.org/) - for automatic documentation

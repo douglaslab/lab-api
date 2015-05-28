@@ -20,25 +20,26 @@ var UsersModel = function() {
   };
 
   this.findAll = function(req, res, next) {
-    UserModel.find({}, {sort: 'name'}, (err, users) => {
+    UserModel.find({}, (err, users) => {
       if(err) {
         handleError(500, err, res);
       }
       else {
-        res.json(200, {error: false, data: users});
+        var result = users.map(x => x.toObject());
+        res.json(200, {error: false, data: result});
       }
       return next();
     });
   };
 
   this.findOne = function(req, res, next) {
-    UserModel.find({email: req.params.email}, (err, user) => {
+    UserModel.findOne({email: req.params.email}, (err, user) => {
       if(err) {
         handleError(500, err, res);
       }
       else {
         if(user) {
-          res.json(200, {error: false, data: user});
+          res.json(200, {error: false, data: user.toObject()});
         }
         else {
           handleError(404, util.format('user: %s not found', req.params.id), res);
@@ -56,7 +57,7 @@ var UsersModel = function() {
       }
       else {
         if(user) {
-          if(user.validateToken(header.token, header.ts)) {
+          if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
             return next();
           }
           else {
@@ -77,14 +78,14 @@ var UsersModel = function() {
       handleError(401, 'incorrect email/password', res);
       return next();
     }
-    UserModel.findOne({email: email}, (err, user) => {
+    UserModel.findOne({email: email}, '+password', (err, user) => {
       if(err) {
         handleError(500, err, res);
       }
       else {
         if(user) {
           if(security.validatePassword(password, user.password)) {
-            res.json(200, {error: false, data: user});
+            res.json(204, {error: false, data: 'user logged in'});
           }
           else {
             handleError(401, 'incorrect password', res);

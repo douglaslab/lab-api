@@ -3,6 +3,8 @@
 var Security = function() {
   var crypto = require('crypto');
   var bcrypt = require('bcrypt');
+  var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
+
 
   this.getRandomBytes = function(length) {
     return crypto.randomBytes(length).toString('hex');
@@ -11,6 +13,11 @@ var Security = function() {
   this.hashPassword = function(password) {
     var salt = bcrypt.genSaltSync(10);
     return bcrypt.hashSync(password, salt);
+  };
+
+  this.getAuthorizationHeader = function(email, password) {
+    var hash = new Buffer(util.format('%s:%s', email, password)).toString('base64');
+    return util.format('Basic %s', hash);
   };
 
   this.validatePassword = function(givenPassword, savedPassword) {

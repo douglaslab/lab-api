@@ -7,13 +7,59 @@ var ItemsModel = function() {
   var ItemModel = require('./schemas/item');
   var ObjectId = require('mongoose').Types.ObjectId;
 
+  /**
+   * Return error in JSON format
+   * @param  {Integer} errorCode HTTP error code
+   * @param  {Object} err       Error object - can be a string
+   * @param  {Object} res       Response object
+   */
   var handleError = function(errorCode, err, res) {
     debug(err);
     res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
   };
 
+  /**
+   * Turns query string parameters into a list of Mongoose search terms
+   * By default, terms are conjunctive (i.e. term1 AND term2 AND...), unless 'operator=or' is specified
+   * Search will be case insensitive, unless 'ignorecase=false' is specified
+   * @param  {Object} query query string object, containing key and values
+   * @return {Object}       Mongoose search object
+   */
+  var parseQueryParameters = function(query) {
+    var operator = '$and';
+    var ignoreCase = true;
+    var search = {};
+
+    if(query.operator) {
+      operator = '$' + query.operator;
+      delete query.operator;
+    }
+    if(query.ignorecase) {
+      ignoreCase = query.ignorecase;
+      delete query.ignorecase;
+    }
+
+    search[operator] = Object.keys(query).map(key => {
+      var obj = {};
+      obj['properties.' + key] = ignoreCase ? {'$regex': new RegExp(query[key], 'i') } : query[key];
+      return obj;
+    });
+    return search;
+  };
+
+  /**
+   * Get all items
+   * User can provide query parameters to search over properties
+   * Query string will be in the form of field1=value1&field2=value2...
+   * By default, terms are conjunctive (i.e. term1 AND term2 AND...), unless 'operator=or' is specified
+   * Search will be case insensitive, unless 'ignorecase=false' is specified
+   * @param  {Object}   req  Request object, containing the query object
+   * @param  {[type]}   res  Response object
+   * @param  {Function} next next operation
+   */
   this.findAll = function(req, res, next) {
-    ItemModel.find({}, (err, items) => {
+    var search = Object.keys(req.query).length > 0 ? parseQueryParameters(req.query) : {};
+    ItemModel.find(search, (err, items) => {
       if(err) {
         handleError(500, err, res);
       }
@@ -25,7 +71,13 @@ var ItemsModel = function() {
     });
   };
 
-  this.findOne = function(req, res, next) {
+  /**
+   * Finds an item by its id
+   * @param  {Object}   req  Request object, containing the id parameter
+   * @param  {[type]}   res  Response object
+   * @param  {Function} next next operation
+   */
+  this.findById = function(req, res, next) {
     ItemModel.findById(new ObjectId(req.params.id), (err, item) => {
       if(err) {
         handleError(500, err, res);
@@ -42,6 +94,12 @@ var ItemsModel = function() {
     });
   };
 
+  /**
+   * Creates a new item
+   * @param  {Object}   req  Request object, containing body object with item properties
+   * @param  {[type]}   res  Response object
+   * @param  {Function} next next operation
+   */
   this.create = function(req, res, next) {
     //verify input is an object
     if(typeof req.body !== 'object') {
@@ -60,6 +118,13 @@ var ItemsModel = function() {
     });
   };
 
+  /**
+   * Updates an existing item
+   * @param  {[type]}   req  [description]
+   * @param  {Object}   req  Request object, containing body object with item properties
+   * @param  {[type]}   res  Response object
+   * @param  {Function} next next operation
+   */
   this.update = function(req, res, next) {
     //verify input is an object
     if(typeof req.body !== 'object') {
@@ -95,6 +160,12 @@ var ItemsModel = function() {
     });
   };
 
+  /**
+   * Delete item
+   * @param  {Object}   req  Request object, containing item id
+   * @param  {[type]}   res  Response object
+   * @param  {Function} next next operation
+   */
   this.delete = function(req, res, next) {
     ItemModel.findByIdAndRemove(new ObjectId(req.params.id), (err, item) => {
       if(err) {

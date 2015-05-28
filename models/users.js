@@ -65,13 +65,19 @@ var UsersModel = function() {
   };
 
   /**
-   * Validate token of API user
-   * @param  {Object}   req  Request object - the authorization header contains token, key, timestamp
-   * @param  {Object}   res  Response object
-   * @param  {Function} next Next operation
+   * Return the validation middleware function, for the required permission level
+   * @param  {String} requiredPermissionLevel currenly, one of USER, MANAGER, ADMIN
+   * @return {Function}                         See internal function for full comment
+   * @see validateTokenAndPermission
    */
   this.validateUser = function(requiredPermissionLevel) {
-    return function(req, res, next) {
+    /**
+     * Validate token of API user
+     * @param  {Object}   req  Request object - the authorization header contains token, key, timestamp
+     * @param  {Object}   res  Response object
+     * @param  {Function} next Next operation
+     */
+    return function validateTokenAndPermission(req, res, next) {
       var apiAuthHeader = req.header(config.apiAuthHeader);
       if (!apiAuthHeader) {
         handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);

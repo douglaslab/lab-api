@@ -7,8 +7,8 @@ var baseImageUrl = require('../../configs/').images.baseUrl;
 var ItemSchema = new Schema({
     version: {type: String, default: '1.0.0'},
     properties: Schema.Types.Mixed,
-    created: {type: Date, default: Date.now},
-    modified: {type: Date, default: Date.now}
+    created: {type: Date, default: Date.now, select: false},
+    modified: {type: Date, default: Date.now, select: false}
   }, {
   toObject: {
     transform: (doc, ret) => {

@@ -4,6 +4,16 @@ var debug = require('debug')('test:items');
 var request = require('supertest');
 var should = require('should');
 
+var generateAuthorizationHeader = function() {
+  var util = require('util');
+  var security = require('../models/security');
+  var timestamp = parseInt(Date.now() / 1000, 10);
+  var apiKey = '3xKnb4yWgjr3xztbKgkc6wmMN0zRnPufAy2u6lqBfA4=';
+  var apiSecret = 'F3UWMwSWhYEystverzDw1YetIMZ+RVv93yjrLboJcs0=';
+  var token = security.generateToken(apiKey, apiSecret, timestamp);
+  return util.format('key=%s, token=%s, ts=%s', apiKey, token, timestamp);
+};
+
 before((done) => require('./startServer.js')(done));
 
 describe('Items tests', () => {
@@ -17,6 +27,7 @@ describe('Items tests', () => {
   it('should Create a new item', (done) => {
     request(process.env.TEST_URL)
       .post('/items')
+      .set('X-API-Authorization', generateAuthorizationHeader())
       .send(newItem)
       .expect('Content-Type', /json/)
       .expect(201)
@@ -37,6 +48,7 @@ describe('Items tests', () => {
   it('should Retrieve the created item', (done) => {
     request(process.env.TEST_URL)
       .get('/items/' + id)
+      .set('X-API-Authorization', generateAuthorizationHeader())
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -56,6 +68,7 @@ describe('Items tests', () => {
   it('should Retrieve all items', (done) => {
     request(process.env.TEST_URL)
       .get('/items')
+      .set('X-API-Authorization', generateAuthorizationHeader())
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -74,6 +87,7 @@ describe('Items tests', () => {
     newItem.name = 'updated';
     request(process.env.TEST_URL)
       .put('/items/' + id)
+      .set('X-API-Authorization', generateAuthorizationHeader())
       .send(newItem)
       .expect('Content-Type', /json/)
       .expect(200)
@@ -93,6 +107,7 @@ describe('Items tests', () => {
   it('should Delete the created item', (done) => {
     request(process.env.TEST_URL)
       .del('/items/' + id)
+      .set('X-API-Authorization', generateAuthorizationHeader())
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {

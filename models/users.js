@@ -2,6 +2,7 @@
 
 var debug = require('debug')('users');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
+var config = require('../configs/service');
 
 /**
  * @class
@@ -14,6 +15,11 @@ var UsersModel = function() {
   var handleError = function(errorCode, err, res) {
     debug(err);
     res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
+  };
+
+  var checkPermissionLevel = function(userLevel, requiredLevel) {
+    var levels = UserModel.schema.path('permissionLevel').enumValues;
+    return levels.indexOf(userLevel) >= levels.indexOf(requiredLevel);
   };
 
   /**
@@ -60,30 +66,43 @@ var UsersModel = function() {
 
   /**
    * Validate token of API user
-   * @param  {Object}   req  Request object - X-API-Authrization contains token, key, timestamp
+   * @param  {Object}   req  Request object - the authorization header contains token, key, timestamp
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
    */
-  this.validateUser = function(req, res, next) {
-    var header = security.parseApiAuthorizationHeader(req.headers['X-API-Authrization']);
-    UserModel.findOne({apiKey: header.key}, (err, user) => {
-      if(err) {
-        handleError(500, err, res);
+  this.validateUser = function(requiredPermissionLevel) {
+    return function(req, res, next) {
+      var apiAuthHeader = req.header(config.apiAuthHeader);
+      if (!apiAuthHeader) {
+        handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);
       }
       else {
-        if(user) {
-          if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
-            return next();
+        var header = security.parseApiAuthorizationHeader(apiAuthHeader);
+        UserModel.findOne({apiKey: header.key}, 'apiKey apiSecret permissionLevel', (err, user) => {
+          if(err) {
+            handleError(500, err, res);
           }
           else {
-            handleError(401, 'incorrect token in X-API-Authrization', res);
+            if(user) {
+              if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
+                if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
+                  return next();
+                }
+                else {
+                  handleError(403, 'operation disallowed', res);
+                }
+              }
+              else {
+                handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);
+              }
+            }
+            else {
+              handleError(404, util.format('user with key: %s not found', header.key), res);
+            }
           }
-        }
-        else {
-          handleError(404, util.format('user with key: %s not found', header.key), res);
-        }
+        });
       }
-    });
+    };
   };
 
   /**
@@ -99,7 +118,7 @@ var UsersModel = function() {
       handleError(401, 'incorrect email/password', res);
       return next();
     }
-    UserModel.findOne({email: email}, '+password', (err, user) => {
+    UserModel.findOne({email: email}, 'password', (err, user) => {
       if(err) {
         handleError(500, err, res);
       }

@@ -85,7 +85,7 @@ var Security = function() {
    * @return {Boolean}           result of comparison
    */
   this.validateToken = function(token, key, secret, timestamp) {
-    var newToken = this.generateToken(key, secret, timestamp);
+    var newToken = this.generateToken(key, secret, timestamp);  //TODO: remove the tiimestamp - generate a real one
     return token === newToken;
   };
 };

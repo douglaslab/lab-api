@@ -8,9 +8,10 @@ var security = require('../models/security');
 before((done) => require('./startServer.js')(done));
 
 describe('Users tests', () => {
+  var rand = Math.floor(Math.random(1000000));
   var newUser = {
-    name: 'Joe Shmoe',
-    email: 'joe@shmoe.com',
+    name: rand,
+    email: rand + '@example.com',
     password: 'blahblah',
     school: 'UCSF'
   };
@@ -75,7 +76,7 @@ describe('Users tests', () => {
       });
   });
 
-  it('should Update the created item', (done) => {
+  it('should Update the created user', (done) => {
     newUser.name = 'updated user';
     request(process.env.TEST_URL)
       .put('/users/' + newUser.email)
@@ -94,7 +95,7 @@ describe('Users tests', () => {
       });
   });
 
-  it('should Delete the created item', (done) => {
+  it('should Delete the created delete', (done) => {
     request(process.env.TEST_URL)
       .del('/users/' + newUser.email)
       .expect('Content-Type', /json/)

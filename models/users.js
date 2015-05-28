@@ -3,6 +3,10 @@
 var debug = require('debug')('users');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 
+/**
+ * @class
+ * @classdesc model for users management
+ */
 var UsersModel = function() {
   var UserModel = require('./schemas/user');
   var security = require('./security');

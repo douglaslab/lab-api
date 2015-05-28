@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * @class
+ * @classdesc Security/encryption functions
+ */
 var Security = function() {
   var crypto = require('crypto');
   var bcrypt = require('bcrypt');

@@ -12,13 +12,12 @@ var UsersModel = function() {
     res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
   };
 
-  var parseHeader = function(header) {
-    //header to be parsed looks like: 'X-API-Authorization: key=%key, token=%token, ts=%timestamp'
-    var result = {};
-    header.replace(new RegExp('([^?=,]+)(=([^,]*))?', 'g'), ($0, $1, $2, $3) => { result[$1.trim()] = $3.trim(); });
-    return result;
-  };
-
+  /**
+   * Get all users
+   * @param  {Object}   req  Request object
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
   this.findAll = function(req, res, next) {
     UserModel.find({}, (err, users) => {
       if(err) {
@@ -32,7 +31,13 @@ var UsersModel = function() {
     });
   };
 
-  this.findOne = function(req, res, next) {
+  /**
+   * Find a user by email
+   * @param  {Object}   req  Request object - params contains email
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
+  this.findByEmail = function(req, res, next) {
     UserModel.findOne({email: req.params.email}, (err, user) => {
       if(err) {
         handleError(500, err, res);
@@ -49,8 +54,14 @@ var UsersModel = function() {
     });
   };
 
+  /**
+   * Validate token of API user
+   * @param  {Object}   req  Request object - X-API-Authrization contains token, key, timestamp
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
   this.validateUser = function(req, res, next) {
-    var header = parseHeader(req.headers['X-API-Authrization']);
+    var header = security.parseApiAuthorizationHeader(req.headers['X-API-Authrization']);
     UserModel.findOne({apiKey: header.key}, (err, user) => {
       if(err) {
         handleError(500, err, res);
@@ -71,6 +82,12 @@ var UsersModel = function() {
     });
   };
 
+  /**
+   * Allow user login by email/password
+   * @param  {Object}   req  Request object - email and password passed in the Authorization header
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
   this.login = function(req, res, next) {
     var email = req.authorization.basic.username;
     var password = req.authorization.basic.password;
@@ -99,6 +116,12 @@ var UsersModel = function() {
     });
   };
 
+  /**
+   * Create a new user
+   * @param  {Object}   req  Request object - body property contains user fields
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
   this.create = function(req, res, next) {
     //verify input is an object
     var newUser = req.body;
@@ -107,8 +130,8 @@ var UsersModel = function() {
       return next();
     }
     newUser.password = security.hashPassword(req.body.password);
-    newUser.apiKey = security.getRandomBytes(32);
-    newUser.apiSecret = security.getRandomBytes(32);
+    newUser.apiKey = security.generateRandomBytes(32);
+    newUser.apiSecret = security.generateRandomBytes(32);
     newUser = new UserModel(newUser);
     newUser.save((err, user) => {
       if(err) {
@@ -126,19 +149,25 @@ var UsersModel = function() {
     });
   };
 
+  /**
+   * Update a user
+   * @param  {Object}   req  Request object - body property contains user fields
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
   this.update = function(req, res, next) {
     if(typeof req.body !== 'object') {
       handleError(400, 'malformed input', res);
       return next();
     }
     req.body.modified = Date.now();
-    UserModel.findOneAndUpdate({email: req.params.email}, req.body, (err, updatedUser) => {
+    UserModel.findOneAndUpdate({email: req.params.email}, req.body, {new: true}, (err, updatedUser) => {
       if(err) {
         handleError(500, err, res);
       }
       else {
         if(updatedUser) {
-          res.json(200, {error: false, data: updatedUser});
+          res.json(200, {error: false, data: updatedUser.toObject()});
         }
         else {
           handleError(404, util.format('User: %s not found', req.params.email), res);
@@ -148,6 +177,12 @@ var UsersModel = function() {
     });
   };
 
+  /**
+   * Delete a user
+   * @param  {Object}   req  Request object - params contains email
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
   this.delete = function(req, res, next) {
     UserModel.findOneAndRemove({email: req.params.email}, (err, user) => {
       if(err) {

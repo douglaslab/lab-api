@@ -36,7 +36,7 @@ describe('Users tests', () => {
   it('should login created user', (done) => {
     request(process.env.TEST_URL)
       .post('/users/login')
-      .set('Authorization', security.getAuthorizationHeader(newUser.email, newUser.password))
+      .set('Authorization', security.generateAuthorizationHeader(newUser.email, newUser.password))
       .expect(204)
       .end(done);
   });
@@ -75,26 +75,24 @@ describe('Users tests', () => {
       });
   });
 
-//   it('should Update the created item', (done) => {
-//     newUser.name = 'updated';
-//     request(process.env.TEST_URL)
-//       .put('/users/' + id)
-//       .send(newUser)
-//       .expect('Content-Type', /json/)
-//       .expect(200)
-//       .end((err, res) => {
-//         debug(res.body);
-//         should.not.exist(err);
-//         res.body.should.have.property('error');
-//         res.body.error.should.be.false;
-//         res.body.should.have.property('data');
-//         res.body.data.should.have.property('id');
-//         res.body.data.should.have.property('properties');
-//         res.body.data.properties.name.should.equal(newUser.name);
-//         id = res.body.data.id;
-//         return done();
-//       });
-//   });
+  it('should Update the created item', (done) => {
+    newUser.name = 'updated user';
+    request(process.env.TEST_URL)
+      .put('/users/' + newUser.email)
+      .send(newUser)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        debug(res.body);
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        res.body.data.should.have.property('name');
+        res.body.data.name.should.equal(newUser.name);
+        return done();
+      });
+  });
 
   it('should Delete the created item', (done) => {
     request(process.env.TEST_URL)

@@ -85,7 +85,6 @@ describe('Items tests', () => {
         res.body.data.should.have.property('id');
         res.body.data.should.have.property('properties');
         res.body.data.properties.name.should.equal(newItem.name);
-        id = res.body.data.id;
         debug(res.body);
         return done();
       });

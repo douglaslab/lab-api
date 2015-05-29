@@ -4,11 +4,14 @@ var debug = require('debug')('test:users');
 var request = require('supertest');
 var should = require('should');
 var security = require('../models/security');
+var helpers = require('./helpers');
 
-before((done) => require('./startServer.js')(done));
+before((done) => {
+  helpers.startServer(done);
+});
 
 describe('Users tests', () => {
-  var rand = Math.floor(Math.random(1000000));
+  var rand = Math.floor(Math.random() * 1000000);
   var newUser = {
     name: rand,
     email: rand + '@example.com',

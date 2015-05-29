@@ -3,8 +3,9 @@
 var debug = require('debug')('test:server');
 var request = require('supertest');
 var should = require('should');
+var helpers = require('./helpers');
 
-before((done) => require('./startServer.js')(done));
+before((done) => helpers.startServer(done));
 
 describe('Basic API tests', () => {
   it('should return 404 error', (done) => {

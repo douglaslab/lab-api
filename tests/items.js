@@ -3,18 +3,30 @@
 var debug = require('debug')('test:items');
 var request = require('supertest');
 var should = require('should');
+var helpers = require('./helpers');
+var testUser = {};
 
 var generateAuthorizationHeader = function() {
   var util = require('util');
   var security = require('../models/security');
   var timestamp = parseInt(Date.now() / 1000, 10);
-  var apiKey = '3xKnb4yWgjr3xztbKgkc6wmMN0zRnPufAy2u6lqBfA4=';
-  var apiSecret = 'F3UWMwSWhYEystverzDw1YetIMZ+RVv93yjrLboJcs0=';
-  var token = security.generateToken(apiKey, apiSecret, timestamp);
-  return util.format('key=%s, token=%s, ts=%s', apiKey, token, timestamp);
+  var token = security.generateToken(testUser.apiKey, testUser.apiSecret, timestamp);
+  return util.format('key=%s, token=%s, ts=%s', testUser.apiKey, token, timestamp);
 };
 
-before((done) => require('./startServer.js')(done));
+before((done) => {
+  helpers.startServer(() => {
+    helpers.createTestUser((error, user) => {
+      if(error) {
+        done(error);
+      }
+      else {
+        testUser = user;
+        done();
+      }
+    });
+  });
+});
 
 describe('Items tests', () => {
   var id = null;
@@ -118,4 +130,8 @@ describe('Items tests', () => {
         return done();
       });
   });
+});
+
+after((done) => {
+  helpers.deleteTestUser(testUser.email, done);
 });

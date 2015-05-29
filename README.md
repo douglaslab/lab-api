@@ -1,5 +1,138 @@
 # DLIMS
-A RESTful API for Douglas Lab Inventory Management System.
+A RESTful API for Douglas Lab Inventory Management System.<br>
+Developers: jump to [installation instructions](#installation).
+
+## The API
+
+The API runs at the root (`/`) of the server. *(We have not decided yet how to treat the root itself)*
+To use the API, an authentication header must be provided by the client (see [Authorization](#authorization).<br>
+Currently supported endpoints:
+
+### `/items` - inventory endpoint
+
+- `GET /items` - get all items fitting the search criteria.
+  - Permission required: `USER`
+  - Possible reponse codes:
+      - 200 - success. Returns array of items in JSON format.
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 500 - server error.
+  - Search criteria:
+      - values are specified as a query string in the form of `field1=value1&field2=value2...`
+      - `operator=or|and` - (`and` by default)
+      - `ignorecase=false|true` - (`true` by default)
+      - if the search string is missing, all items will be returned
+- `GET /items/:id` - get item by the id provided.
+  - Permission required: `USER`
+  - Possible reponse codes:
+      - 200 - success. Returns item in JSON format.
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - item not found.
+      - 500 - server error.
+- `POST /items` - create a new item. Item properties are provided in the request body.
+  - Permission required: `USER`
+  - Possible reponse codes:
+      - 201 - success. Returns new item in JSON format.
+      - 400 - malformed input
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 500 - server error.
+- `PUT /items/:id` - update an item. Updated item properties are provided in the request body.
+  - Permission required: `USER`
+  - Possible reponse codes:
+      - 200 - success. Returns updated item in JSON format.
+      - 400 - malformed input
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - item not found.
+      - 500 - server error.
+- `DELETE /items/:id` - delete an item.
+  - Permission required: `USER`
+  - Possible reponse codes:
+      - 200 - success.
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - item not found.
+      - 500 - server error.
+
+### `/users` - users endpoint
+
+- `GET /users` - get all users.
+  - Permission required: `MANAGER`
+  - Possible reponse codes:
+      - 200 - success. Returns array of users in JSON format.
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 500 - server error.
+- `GET /users/:id` - get user by the id provided.
+  - Permission required: `MANAGER`
+  - Possible reponse codes:
+      - 200 - success. Returns user in JSON format.
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - user not found.
+      - 500 - server error.
+- `POST /users` - create a new user. User properties are provided in the request body.
+  - Permission required: `MANAGER`
+  - Possible reponse codes:
+      - 201 - success. Returns new user in JSON format.
+      - 400 - malformed input
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 500 - server error.
+- `PUT /users/:id` - update a user. Updated user properties are provided in the request body.
+  - Permission required: `MANAGER`
+  - Possible reponse codes:
+      - 200 - success. Returns updated user in JSON format.
+      - 400 - malformed input
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - user not found.
+      - 500 - server error.
+- `DELETE /users/:id` - delete a user.
+  - Permission required: `MANAGER`
+  - Possible reponse codes:
+      - 200 - success.
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - user not found.
+      - 500 - server error.
+- `POST /users/login` - authenticate a user. Email and password are provided in the `Authorization` HTTP header (see [Authentication](#authentication)).
+  - Permission required: **none**
+  - Possible reponse codes:
+      - 204 - success.
+      - 404 - user not found.
+      - 500 - server error.
+
+### Authorization
+
+To use the API, the client must provide the `X-API-Authorization` HTTP header, containing:
+- `key` - The user's API key
+- `ts` - The current timesatmp, in seconds
+- `token` - the calculated token, based on the API key, secret and timestamp
+
+The following code shows how to construct the header:
+
+```node
+var util = require('util');
+var crypto = require('crypto');
+var ts = parseInt((new Date()).getTime() / 1000, 10);
+var hmac = crypto.createHmac('sha1', apiSecret).update(apiKey).digest('hex');
+var token = crypto.createHash('md5').update(hmac + ts).digest('hex');
+var header = {'X-API-Authorization': util.format('key=%s, token=%s, ts=%s', apiKey, token, timestamp)};
+```
+
+### Authentication
+
+To log in to the system, the client needs to provide the user's email and password in the `Authrization` header.
+The following code shows how to construct the header:
+
+```node
+var util = require('util');
+var hash = new Buffer(util.format('%s:%s', email, password)).toString('base64');
+var header = {'Authorization': util.format('Basic %s', hash)};
+```
 
 ## Installation
 

@@ -16,7 +16,7 @@ var generateAuthorizationHeader = function() {
 
 before((done) => {
   helpers.startServer(() => {
-    helpers.createTestUser((error, user) => {
+    helpers.createTestUser('USER', (error, user) => {
       if(error) {
         done(error);
       }

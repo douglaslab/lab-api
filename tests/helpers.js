@@ -20,12 +20,13 @@ exports.startServer = function(done) {
   }
 };
 
-exports.createTestUser = function(callback) {
+exports.createTestUser = function(permissionLevel, callback) {
   var rand = Math.floor(Math.random() * 1000000);
   var newUser = {
     name: 'test' + rand,
     email: 'test' + rand + '@example.com',
     password: 'blahblah',
+    permissionLevel: permissionLevel,
     school: 'UCSF'
   };
   request(process.env.TEST_URL)

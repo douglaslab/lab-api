@@ -35,7 +35,7 @@ server.get('/', (req, res) => {
 mongoose.connect(config.db.connection);
 mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 mongoose.connection.on('open', () => {
-  debug('Connected to db: %s:%s', mongoose.connections[0].host, mongoose.connections[0].port);
+  debug('Connected to %s db: %s:%s', config.db.name, mongoose.connections[0].host, mongoose.connections[0].port);
   //only add routes if db is connected
   require('./routes/items')(server);
   require('./routes/users')(server);

@@ -1,6 +1,14 @@
 {
   "development": {
-    "name": "Local dev db",
+    "name": "Local",
     "connection": "mongodb://localhost/dlab"
+  },
+  "staging": {
+    "name": "Staging",
+    "connection": ""
+  },
+  "production": {
+    "name": "Production",
+    "connection": ""
   }
 }

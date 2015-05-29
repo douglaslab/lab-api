@@ -154,8 +154,8 @@ var UsersModel = function() {
   this.create = function(req, res, next) {
     //verify input is an object
     var newUser = req.body;
-    if(typeof newUser !== 'object') {
-      handleError(400, 'malformed input', res);
+    if(typeof newUser !== 'object' || !newUser.email || !newUser.password || !newUser.name) {
+      handleError(400, 'malformed input - user must have at least email, password, and name properties', res);
       return next();
     }
     newUser.password = security.hashPassword(req.body.password);

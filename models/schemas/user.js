@@ -5,10 +5,10 @@ var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
     email: {type: String, required: true, unique: true},
+    password: {type: String, required: true, select: false},
     name: {type: String, require: true},
     school: {type: String},
     company: {type: String},
-    password: {type: String, required: true, select: false},
     apiKey: {type: String, required: true, select: false},
     apiSecret: {type: String, required: true, select: false},
     permissionLevel: {type: String, required: true, enum: ['USER', 'MANAGER', 'ADMIN'], default: 'USER'},

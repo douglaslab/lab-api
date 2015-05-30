@@ -43,7 +43,7 @@ mongoose.connection.on('open', () => {
 
 
 server.listen(process.env.PORT || 3000, () => {
-  console.log('%s listening at %s', server.name, server.url.replace('[::]', 'localhost'));
+  debug('%s listening at %s', server.name, server.url.replace('[::]', 'localhost'));
 });
 
 module.exports = server;

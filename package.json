@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node --harmony server.js",
     "test": "mocha --harmony tests",
+    "cover": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha -- tests -R spec -U exports",
     "lint": "eslint .",
     "dev": "eslint . && node --harmony server.js",
     "doc": "jsdoc -c ./jsdoc.json ."
@@ -36,7 +37,7 @@
   },
   "devDependencies": {
     "gulp": "^3.8.11",
-    "istanbul": "^0.3.14",
+    "istanbul-harmony": "^0.3.12",
     "mocha": "^2.2.5",
     "should": "^6.0.3",
     "supertest": "^1.0.1"

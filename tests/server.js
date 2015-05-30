@@ -20,9 +20,9 @@ describe('Basic API tests', () => {
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
+        debug(res.body);
         should.not.exist(err);
         res.body.should.have.property('message');
-        debug(res.body);
         return done();
       });
   });

@@ -2,11 +2,12 @@
   "name": "douglaslab-inventory-api",
   "version": "1.0.0",
   "description": "Inventory management API for Douglas Lab",
+  "private": true,
   "main": "server.js",
   "scripts": {
     "start": "node --harmony server.js",
     "test": "mocha --harmony tests",
-    "cover": "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha -- tests -R spec -U exports",
+    "cover": "node --harmony ./node_modules/istanbul-harmony/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --R spec --U exports tests",
     "lint": "eslint .",
     "dev": "eslint . && node --harmony server.js",
     "doc": "jsdoc -c ./jsdoc.json ."

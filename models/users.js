@@ -131,7 +131,7 @@ var UsersModel = function() {
       else {
         if(user) {
           if(security.validatePassword(password, user.password)) {
-            res.json(200, {error: false, data: user});
+            res.json(200, {error: false, data: user.toObject()});
           }
           else {
             handleError(401, 'incorrect password', res);

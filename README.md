@@ -98,10 +98,11 @@ Currently supported endpoints:
       - 403 - permission denied.
       - 404 - user not found.
       - 500 - server error.
-- `POST /users/login` - authenticate a user. Email and password are provided in the `Authorization` HTTP header (see [Authentication](#authentication)).
+- `POST /users/login` - authenticate a user. Email and password are provided in the `Authorization` HTTP header (see [Authentication](#authentication)). Upon successful login, wil return the user object.
   - Permission required: **none**
-  - Possible reponse codes:
-      - 204 - success.
+  - Possible response codes:
+      - 200 - success.
+      - 401 - incorrect email or password
       - 404 - user not found.
       - 500 - server error.
 

@@ -41,8 +41,17 @@ describe('Users tests', () => {
     request(process.env.TEST_URL)
       .post('/users/login')
       .set('Authorization', security.generateAuthorizationHeader(newUser.email, newUser.password))
-      .expect(204)
-      .end(done);
+      .expect(200)
+      .end((err, res) => {
+        debug(res.body);
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        res.body.data.should.have.property('email');
+        res.body.data.email.should.equal(newUser.email);
+        return done();
+      });
   });
 
   it('should Retrieve the created user', (done) => {

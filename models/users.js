@@ -124,14 +124,14 @@ var UsersModel = function() {
       handleError(401, 'incorrect email/password', res);
       return next();
     }
-    UserModel.findOne({email: email}, 'password', (err, user) => {
+    UserModel.findOne({email: email}, '+password', (err, user) => {
       if(err) {
         handleError(500, err, res);
       }
       else {
         if(user) {
           if(security.validatePassword(password, user.password)) {
-            res.json(204, {error: false, data: 'user logged in'});
+            res.json(200, {error: false, data: user});
           }
           else {
             handleError(401, 'incorrect password', res);

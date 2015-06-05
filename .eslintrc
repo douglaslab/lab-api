@@ -1,0 +1,19 @@
+{
+ env: {
+    "es6": true,
+ 	  "node": true,
+    "mocha": true
+  },
+  "rules": {
+    "quotes": [2, "single", "avoid-escape"],
+    "semi": [2, "always"],
+    "camelcase": [2, {"properties": "always"}],
+    "strict": [2, "global"],
+    "eqeqeq": [2, "smart"],
+    "curly": [2, "all"],
+    "no-spaced-func": 2,
+    "no-unused-vars": 2,
+    "no-underscore-dangle": false,
+    "no-unused-expressions": false
+  }
+}

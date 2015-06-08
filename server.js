@@ -24,19 +24,17 @@ server.use(restify.acceptParser(server.acceptable))
   .use(restify.fullResponse())
   .pre(restify.pre.sanitizePath());
 
-//TODO: REMOVE THIS return message when hitting root
-server.get('/', (req, res) => {
-  //TODO: change to 404 or 401
-  let recentVersion = Array.isArray(server.versions) ? server.versions[server.versions.length - 1] : server.versions;
-  res.send(200, {message: 'Welcome to ' + server.name + ' version ' + recentVersion});
-});
-
 //database connection
 mongoose.connect(config.db.connection);
-mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
+mongoose.connection.on('error', (err) => {
+  console.error('connection error:', err.message);
+  require('./routes/global')(server, false);
+});
+
 mongoose.connection.on('open', () => {
   debug('Connected to %s db: %s:%s', config.db.name, mongoose.connections[0].host, mongoose.connections[0].port);
   //only add routes if db is connected
+  require('./routes/global')(server, true);
   require('./routes/items')(server);
   require('./routes/users')(server);
 });

@@ -4,22 +4,29 @@ module.exports = function(server, dbUp) {
   server.get('/health', (req, res) => {
     let recentVersion = Array.isArray(server.versions) ? server.versions[server.versions.length - 1] : server.versions;
     var status = {
-      version: recentVersion,
       name: server.name,
+      version: recentVersion,
+      online: dbUp,
+      message: '',
       platform: process.platform,
       architecture: process.arch,
-      memoryUsage: process.memoryUsage(),
-      message: ''
+      memoryUsage: process.memoryUsage()
     };
     if(dbUp) {
-      status.up = true;
       res.send(200, {error: false, data: status});
     }
     else {
-      status.up = false;
-      status.message = 'Could not connect to database. Service requires restart.';
+      status.message = 'service down: cannot connect to database';
       res.send(500, {error: true, data: status});
     }
   });
 
+  server.on('NotFound', (req, res) => {
+    if(dbUp) {
+      res.send(404, {error: true, data: req.url + ' does not exist'});
+    }
+    else {
+      res.send(500, {error: true, data: 'service down: cannot connect to database'});
+    }
+  });
 };

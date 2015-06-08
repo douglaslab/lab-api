@@ -106,6 +106,14 @@ Currently supported endpoints:
       - 404 - user not found.
       - 500 - server error.
 
+### `/health` - service statistics endpoint
+
+- `GET /health` - gets the current status of the service, along with service statistics.
+  - Permission required: **none**
+  - Possible response codes:
+      - 200 - success.
+      - 500 - server error.
+
 ### Authorization
 
 To use the API, the client must provide the `X-API-Authorization` HTTP header, containing:

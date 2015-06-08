@@ -29,7 +29,7 @@ var UsersModel = function() {
    * @param  {Function} next Next operation
    */
   this.findAll = function(req, res, next) {
-    UserModel.find({}, (err, users) => {
+    UserModel.find({}, '+created +modified', (err, users) => {
       if(err) {
         handleError(500, err, res);
       }

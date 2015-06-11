@@ -7,5 +7,6 @@ module.exports = function(server) {
   server.get('/items/:id', users.validateUser('USER'), items.findById);
   server.post('/items', users.validateUser('USER'), items.create);
   server.put('/items/:id', users.validateUser('USER'), items.update);
+  server.put('/items/:id/:replace', users.validateUser('USER'), items.update);
   server.del('/items/:id', users.validateUser('USER'), items.delete);
 };

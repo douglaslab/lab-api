@@ -146,8 +146,13 @@ var ItemsModel = function() {
       else {
         if(item) {
           item.modified = Date.now();
-          for(let field of Object.keys(req.body)) {
-            item.properties[field] = req.body[field];
+          if(req.params.replace) {
+            item.properties = req.body;
+          }
+          else {
+            for(let field of Object.keys(req.body)) {
+              item.properties[field] = req.body[field];
+            }
           }
           item.markModified('properties');
           item.save((err2, newItem) => {

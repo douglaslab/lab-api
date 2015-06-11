@@ -6,6 +6,6 @@ module.exports = function(server) {
   server.get('/users/:email', /*users.validateUser('MANAGER'),*/ users.findByEmail);
   server.post('/users', /*users.validateUser('MANAGER'),*/ users.create);
   server.put('/users/:email', /*users.validateUser('MANAGER'),*/ users.update);
-  server.del('/users/:email', /*users.validateUser('MANAGER'),*/ users.delete);
-  server.post('/users/login', /*users.validateUser('MANAGER'),*/ users.login);
+  server.del('/users/:email', /*users.validateUser('ADMIN'),*/ users.delete);
+  server.post('/users/login', users.login);
 };

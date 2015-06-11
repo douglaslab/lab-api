@@ -47,6 +47,17 @@ Currently supported endpoints:
       - 403 - permission denied.
       - 404 - item not found.
       - 500 - server error.
+  - Note: this adds new properties, or replaces existing properties, but does not remove properties.
+- `PUT /items/:id/true` - replace all properties of an item. Updated item properties are provided in the request body.
+  - Permission required: `USER`
+  - Possible reponse codes:
+      - 200 - success. Returns updated item in JSON format.
+      - 400 - malformed input
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - item not found.
+      - 500 - server error.
+  - Note: this replaces all existing properties with provided properties.
 - `DELETE /items/:id` - delete an item.
   - Permission required: `USER`
   - Possible reponse codes:

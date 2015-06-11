@@ -7,6 +7,7 @@ var security = require('../models/security');
 
 describe('Security tests', () => {
   let pass = 'blahblah', hash;
+  should;
   it('should generate 64 random bytes', () => {
     let result = security.generateRandomBytes(64);
     debug(result);

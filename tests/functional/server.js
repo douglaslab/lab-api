@@ -7,7 +7,7 @@ var helpers = require('./helpers');
 
 before((done) => helpers.startServer(done));
 
-describe('Basic API tests', () => {
+describe('Server functional tests', () => {
   it('should return error for accessing root', (done) => {
     request(process.env.TEST_URL)
       .get('/')

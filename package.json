@@ -6,8 +6,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node --harmony server.js",
-    "test": "mocha --harmony tests",
-    "cover": "node --harmony ./node_modules/istanbul-harmony/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --R spec --U exports tests",
+    "test": "mocha --harmony --recursive tests",
+    "cover": "node --harmony ./node_modules/istanbul-harmony/lib/cli.js cover --hook-run-in-context ./node_modules/mocha/bin/_mocha -- --recursive --R spec --U exports tests",
     "lint": "eslint .",
     "dev": "eslint . && node --harmony server.js",
     "doc": "jsdoc -c ./jsdoc.json ."

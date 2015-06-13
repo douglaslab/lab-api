@@ -3,11 +3,15 @@
 var debug = require('debug')('test:security');
 var should = require('should');
 var util = require('util');
-var security = require('../models/security');
+var security = require('../../models/security');
 
-describe('Security tests', () => {
+before((done) => {
+  should; //bypass ESLint no-unused-var error
+  done();
+});
+
+describe('Security unit tests', () => {
   let pass = 'blahblah', hash;
-  should;
   it('should generate 64 random bytes', () => {
     let result = security.generateRandomBytes(64);
     debug(result);

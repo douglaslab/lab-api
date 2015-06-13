@@ -3,12 +3,12 @@
 var debug = require('debug')('test:items');
 var request = require('supertest');
 var should = require('should');
+var security = require('../../models/security');
 var helpers = require('./helpers');
 var testUser = {};
 
 var generateAuthorizationHeader = function() {
   var util = require('util');
-  var security = require('../models/security');
   var timestamp = parseInt(Date.now() / 1000, 10);
   var token = security.generateToken(testUser.apiKey, testUser.apiSecret, timestamp);
   return util.format('key=%s, token=%s, ts=%s', testUser.apiKey, token, timestamp);
@@ -28,7 +28,7 @@ before((done) => {
   });
 });
 
-describe('Items tests', () => {
+describe('Items functional tests', () => {
   var id = null;
   var newItem = {
     name: 'balance',

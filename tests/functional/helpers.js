@@ -1,13 +1,13 @@
 'use strict';
 
 var debug = require('debug')('test:helpers');
-var request = require('supertest');
+var server = require('../../server');
+var users = require('../../models/users');
 
 //helper function to start the service for tests
 //The environment variable makes it reentrant
 exports.startServer = function(done) {
   if(!process.env.TEST_URL) {
-    var server = require('../../server');
     //give the server 1/2 a second to start
     setTimeout(() => {
       process.env.TEST_URL = server.url.replace('[::]', 'localhost');
@@ -21,7 +21,6 @@ exports.startServer = function(done) {
 };
 
 exports.createTestUser = function(permissionLevel, callback) {
-  var users = require('../../models/users');
   var rand = Math.floor(Math.random() * 1000000);
   var newUser = {
     name: 'test' + rand,
@@ -30,20 +29,31 @@ exports.createTestUser = function(permissionLevel, callback) {
     permissionLevel: permissionLevel,
     school: 'UCSF'
   };
-  request(process.env.TEST_URL)
-    .post('/users')
-    .send(newUser)
-    .end((err, res) => {
-      debug('test user %s created', res.body.data.email);
-      callback(err, res.body.data);
-    });
+  var req = {
+    body: newUser
+  };
+  var res = {
+    json: function (status, result) {
+      debug('test user %s created', result.data.email);
+      var err = (status !== 201) ? new Error(err) : null;
+      callback(err, result.data);
+    }
+  };
+  users.create(req, res, () => {});
 };
 
 exports.deleteTestUser = function(email, callback) {
-  request(process.env.TEST_URL)
-    .del('/users/' + email)
-    .end(() => {
-      debug('test user %s deleted', email);
-      callback();
-    });
+  var req = {
+    params: {
+      email: email
+    }
+  };
+  var res = {
+    json: function (status, result) {
+      debug(result.data);
+      var err = (status !== 200) ? new Error(err) : null;
+      callback(err, result.data);
+    }
+  };
+  users.delete(req, res, () => {});
 };

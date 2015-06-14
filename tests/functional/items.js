@@ -89,6 +89,27 @@ describe('Items functional tests', () => {
   });
 
   it('should Update the created item', (done) => {
+    newItem.name = 'updated';
+    request(process.env.TEST_URL)
+      .put('/items/' + id)
+      .set('X-API-Authorization', generateAuthorizationHeader())
+      .send(newItem)
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        res.body.data.should.have.property('id');
+        res.body.data.should.have.property('properties');
+        res.body.data.properties.name.should.equal(newItem.name);
+        debug(res.body);
+        return done();
+      });
+  });
+
+  it('should Replace all properties of the created item', (done) => {
     let item = {
       prop1: 'val1',
       prop2: 'val2'
@@ -109,27 +130,6 @@ describe('Items functional tests', () => {
         res.body.data.properties.prop1.should.equal(item.prop1);
         res.body.data.properties.prop2.should.equal(item.prop2);
         Object.keys(res.body.data.properties).length.should.equal(Object.keys(item).length);
-        debug(res.body);
-        return done();
-      });
-  });
-
-  it('should Replace all properties of the created item', (done) => {
-    newItem.name = 'updated';
-    request(process.env.TEST_URL)
-      .put('/items/' + id)
-      .set('X-API-Authorization', generateAuthorizationHeader())
-      .send(newItem)
-      .expect('Content-Type', /json/)
-      .expect(200)
-      .end((err, res) => {
-        should.not.exist(err);
-        res.body.should.have.property('error');
-        res.body.error.should.be.false;
-        res.body.should.have.property('data');
-        res.body.data.should.have.property('id');
-        res.body.data.should.have.property('properties');
-        res.body.data.properties.name.should.equal(newItem.name);
         debug(res.body);
         return done();
       });

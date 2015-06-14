@@ -40,6 +40,7 @@
     "gulp": "^3.8.11",
     "istanbul-harmony": "^0.3.12",
     "mocha": "^2.2.5",
+    "node-mocks-http": "^1.4.3",
     "should": "^6.0.3",
     "supertest": "^1.0.1"
   }

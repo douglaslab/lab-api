@@ -113,6 +113,7 @@ var ItemsModel = function() {
     ItemModel.findById(id, (err, item) => {
       if(err) {
         helper.handleError(500, err, res);
+        return next();
       }
       else {
         if(item) {
@@ -139,8 +140,8 @@ var ItemsModel = function() {
         }
         else {
           helper.handleError(404, util.format('Item: %s not found', req.params.id), res);
+          return next();
         }
-        return next();
       }
     });
   };

@@ -1,6 +1,7 @@
 'use strict';
 
 var debug = require('debug')('items');
+var helper = require('./modelHelper');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 
 /**
@@ -9,48 +10,6 @@ var util = require('util'); //TODO: util.format can be removed when Node starts 
  */
 var ItemsModel = function() {
   var ItemModel = require('./schemas/item');
-  var ObjectId = require('mongoose').Types.ObjectId;
-
-  /**
-   * Return error in JSON format
-   * @param  {Integer} errorCode HTTP error code
-   * @param  {Object} err       Error object - can be a string
-   * @param  {Object} res       Response object
-   */
-  var handleError = function(errorCode, err, res) {
-    debug(err);
-    res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
-  };
-
-  /**
-   * Turns query string parameters into a list of Mongoose search terms<br>
-   * By default, terms are conjunctive (i.e. term1 AND term2 AND...), unless 'operator=or' is specified<br>
-   * Search will be case insensitive, unless 'ignorecase=false' is specified
-   *
-   * @param  {Object} query query string object, containing key and values
-   * @return {Object}       Mongoose search object
-   */
-  var parseQueryParameters = function(query) {
-    var operator = '$and';
-    var ignoreCase = true;
-    var search = {};
-
-    if(query.operator) {
-      operator = '$' + query.operator;
-      delete query.operator;
-    }
-    if(query.ignorecase) {
-      ignoreCase = query.ignorecase;
-      delete query.ignorecase;
-    }
-
-    search[operator] = Object.keys(query).map(key => {
-      var obj = {};
-      obj['properties.' + key] = ignoreCase ? {'$regex': new RegExp(query[key], 'i') } : query[key];
-      return obj;
-    });
-    return search;
-  };
 
   /**
    * Get all items
@@ -66,10 +25,10 @@ var ItemsModel = function() {
    * @param  {Function} next next operation
    */
   this.findAll = function(req, res, next) {
-    var search = Object.keys(req.query).length > 0 ? parseQueryParameters(req.query) : {};
+    var search = Object.keys(req.query).length > 0 ? helper.parseQueryParameters(req.query) : {};
     ItemModel.find(search, (err, items) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         var result = items.map(x => x.toObject());
@@ -86,16 +45,22 @@ var ItemsModel = function() {
    * @param  {Function} next next operation
    */
   this.findById = function(req, res, next) {
-    ItemModel.findById(new ObjectId(req.params.id), (err, item) => {
+    //verify id is legal
+    var id = helper.getObjectId(req.params.id);
+    if(id === null) {
+      helper.handleError(400, 'illegal item id', res);
+      return next();
+    }
+    ItemModel.findById(id, (err, item) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         if(item) {
           res.json(200, {error: false, data: item.toObject()});
         }
         else {
-          handleError(404, util.format('Item: %s not found', req.params.id), res);
+          helper.handleError(404, util.format('Item: %s not found', req.params.id), res);
         }
       }
       return next();
@@ -109,15 +74,15 @@ var ItemsModel = function() {
    * @param  {Function} next next operation
    */
   this.create = function(req, res, next) {
-    //verify input is an object
-    if(typeof req.body !== 'object') {
-      handleError(400, 'malformed input', res);
+    //verify input is not empty
+    if(helper.isEmpty(req.body)) {
+      helper.handleError(400, 'malformed input', res);
       return next();
     }
     var newItem = new ItemModel({properties: req.body});
     newItem.save((err, item) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         res.json(201, {error: false, data: item.toObject()});
@@ -134,17 +99,24 @@ var ItemsModel = function() {
    * @param  {Function} next next operation
    */
   this.update = function(req, res, next) {
-    //verify input is an object
-    if(typeof req.body !== 'object') {
-      handleError(400, 'malformed input', res);
+    //verify input is not empty
+    if(helper.isEmpty(req.body)) {
+      helper.handleError(400, 'malformed input', res);
       return next();
     }
-    ItemModel.findById(new ObjectId(req.params.id), (err, item) => {
+    //verify id is legal
+    var id = helper.getObjectId(req.params.id);
+    if(id === null) {
+      helper.handleError(400, 'illegal item id', res);
+      return next();
+    }
+    ItemModel.findById(id, (err, item) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         if(item) {
+          debug(item);
           item.modified = Date.now();
           if(req.params.replace) {
             item.properties = req.body;
@@ -157,7 +129,7 @@ var ItemsModel = function() {
           item.markModified('properties');
           item.save((err2, newItem) => {
             if(err2) {
-              handleError(500, err2, res);
+              helper.handleError(500, err2, res);
             }
             else {
               res.json(200, {error: false, data: newItem.toObject()});
@@ -166,7 +138,7 @@ var ItemsModel = function() {
           });
         }
         else {
-          handleError(404, util.format('Item: %s not found', req.params.id), res);
+          helper.handleError(404, util.format('Item: %s not found', req.params.id), res);
         }
         return next();
       }
@@ -180,16 +152,23 @@ var ItemsModel = function() {
    * @param  {Function} next next operation
    */
   this.delete = function(req, res, next) {
-    ItemModel.findByIdAndRemove(new ObjectId(req.params.id), (err, item) => {
+    //verify id is legal
+    var id = helper.getObjectId(req.params.id);
+    if(id === null) {
+      helper.handleError(400, 'illegal item id', res);
+      return next();
+    }
+    ItemModel.findByIdAndRemove(id, (err, item) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         if(item) {
+          debug(item);
           res.json(200, {error: false, data: util.format('Item %s deleted successfully', item.id)});
         }
         else {
-          handleError(404, util.format('Item: %s not found', req.params.id), res);
+          helper.handleError(404, util.format('Item: %s not found', req.params.id), res);
         }
       }
       return next();

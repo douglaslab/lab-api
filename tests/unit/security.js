@@ -1,6 +1,6 @@
 'use strict';
 
-var debug = require('debug')('test:security');
+var debug = require('debug')('test:unit:security');
 var should = require('should');
 var util = require('util');
 var security = require('../../models/security');

@@ -1,10 +1,10 @@
 'use strict';
 
-var debug = require('debug')('test:items');
+var debug = require('debug')('test:function:items');
 var request = require('supertest');
 var should = require('should');
 var security = require('../../models/security');
-var helpers = require('./helpers');
+var helpers = require('../helpers');
 var testUser = {};
 
 var generateAuthorizationHeader = function() {
@@ -15,16 +15,9 @@ var generateAuthorizationHeader = function() {
 };
 
 before((done) => {
-  helpers.startServer(() => {
-    helpers.createTestUser('USER', (error, user) => {
-      if(error) {
-        done(error);
-      }
-      else {
-        testUser = user;
-        done();
-      }
-    });
+  helpers.createTestUser('USER', (err, user) => {
+    testUser = err ? null : user;
+    done(err);
   });
 });
 

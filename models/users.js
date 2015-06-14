@@ -1,6 +1,7 @@
 'use strict';
 
 var debug = require('debug')('users');
+var helper = require('./modelHelper');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 var config = require('../configs/service');
 
@@ -11,11 +12,6 @@ var config = require('../configs/service');
 var UsersModel = function() {
   var UserModel = require('./schemas/user');
   var security = require('./security');
-
-  var handleError = function(errorCode, err, res) {
-    debug(err);
-    res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
-  };
 
   var checkPermissionLevel = function(userLevel, requiredLevel) {
     var levels = UserModel.schema.path('permissionLevel').enumValues;
@@ -31,7 +27,7 @@ var UsersModel = function() {
   this.findAll = function(req, res, next) {
     UserModel.find({}, '+created +modified', (err, users) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         var result = users.map(x => x.toObject());
@@ -50,14 +46,14 @@ var UsersModel = function() {
   this.findByEmail = function(req, res, next) {
     UserModel.findOne({email: req.params.email}, (err, user) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         if(user) {
           res.json(200, {error: false, data: user.toObject()});
         }
         else {
-          handleError(404, util.format('user: %s not found', req.params.id), res);
+          helper.handleError(404, util.format('user: %s not found', req.params.id), res);
         }
       }
       return next();
@@ -80,13 +76,13 @@ var UsersModel = function() {
     return function validateTokenAndPermission(req, res, next) {
       var apiAuthHeader = req.header(config.apiAuthHeader);
       if (!apiAuthHeader) {
-        handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);
+        helper.handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);
       }
       else {
         var header = security.parseApiAuthorizationHeader(apiAuthHeader);
         UserModel.findOne({apiKey: header.key}, 'apiKey apiSecret permissionLevel', (err, user) => {
           if(err) {
-            handleError(500, err, res);
+            helper.handleError(500, err, res);
           }
           else {
             if(user) {
@@ -95,15 +91,15 @@ var UsersModel = function() {
                   return next();
                 }
                 else {
-                  handleError(403, 'operation disallowed', res);
+                  helper.handleError(403, 'operation disallowed', res);
                 }
               }
               else {
-                handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);
+                helper.handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);
               }
             }
             else {
-              handleError(404, util.format('user with key: %s not found', header.key), res);
+              helper.handleError(404, util.format('user with key: %s not found', header.key), res);
             }
           }
         });
@@ -121,12 +117,12 @@ var UsersModel = function() {
     var email = req.authorization.basic.username;
     var password = req.authorization.basic.password;
     if(!email || !password) {
-      handleError(401, 'incorrect email/password', res);
+      helper.handleError(401, 'incorrect email/password', res);
       return next();
     }
     UserModel.findOne({email: email}, '+password', (err, user) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         if(user) {
@@ -134,11 +130,11 @@ var UsersModel = function() {
             res.json(200, {error: false, data: user.toObject()});
           }
           else {
-            handleError(401, 'incorrect password', res);
+            helper.handleError(401, 'incorrect password', res);
           }
         }
         else {
-          handleError(404, ('user: %s not found', req.body.email), res);
+          helper.handleError(404, ('user: %s not found', req.body.email), res);
         }
       }
       return next();
@@ -155,9 +151,11 @@ var UsersModel = function() {
     //verify input is an object
     var newUser = req.body;
     if(typeof newUser !== 'object' || !newUser.email || !newUser.password || !newUser.name) {
-      handleError(400, 'malformed input - user must have at least email, password, and name properties', res);
+      helper.handleError(400, 'malformed input - user must have at least email, password, and name properties', res);
       return next();
     }
+    newUser.permissionLevel = UserModel.schema.path('permissionLevel').enumValues.indexOf(req.body.permissionLevel) !== -1 ?
+      req.body.permissionLevel : 'USER';
     newUser.password = security.hashPassword(req.body.password);
     newUser.apiKey = security.generateRandomBytes(32);
     newUser.apiSecret = security.generateRandomBytes(32);
@@ -165,10 +163,10 @@ var UsersModel = function() {
     newUser.save((err, user) => {
       if(err) {
         if(err.message.contains('duplicate')) {
-          handleError(400, util.format('user with email %s already exists', newUser.email), res);
+          helper.handleError(400, util.format('user with email %s already exists', newUser.email), res);
         }
         else {
-          handleError(500, err, res);
+          helper.handleError(500, err, res);
         }
       }
       else {
@@ -185,21 +183,21 @@ var UsersModel = function() {
    * @param  {Function} next Next operation
    */
   this.update = function(req, res, next) {
-    if(typeof req.body !== 'object') {
-      handleError(400, 'malformed input', res);
+    if(helper.isEmpty(req.body)) {
+      helper.handleError(400, 'malformed input', res);
       return next();
     }
     req.body.modified = Date.now();
     UserModel.findOneAndUpdate({email: req.params.email}, req.body, {new: true}, (err, updatedUser) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         if(updatedUser) {
           res.json(200, {error: false, data: updatedUser.toObject()});
         }
         else {
-          handleError(404, util.format('User: %s not found', req.params.email), res);
+          helper.handleError(404, util.format('User: %s not found', req.params.email), res);
         }
       }
       return next();
@@ -215,14 +213,14 @@ var UsersModel = function() {
   this.delete = function(req, res, next) {
     UserModel.findOneAndRemove({email: req.params.email}, (err, user) => {
       if(err) {
-        handleError(500, err, res);
+        helper.handleError(500, err, res);
       }
       else {
         if(user) {
           res.json(200, {error: false, data: util.format('user %s deleted successfully', user.email)});
         }
         else {
-          handleError(404, util.format('User: %s not found', req.params.email), res);
+          helper.handleError(404, util.format('User: %s not found', req.params.email), res);
         }
       }
       return next();

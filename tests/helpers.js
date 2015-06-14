@@ -2,8 +2,8 @@
 
 var debug = require('debug')('test:helpers');
 var httpMocks = require('node-mocks-http');
-var server = require('../../server');
-var users = require('../../models/users');
+var server = require('../server');
+var users = require('../models/users');
 
 var generateRandomUser = function(permissionLevel) {
   var rand = Math.floor(Math.random() * 1000000);

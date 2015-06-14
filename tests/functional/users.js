@@ -1,10 +1,10 @@
 'use strict';
 
-var debug = require('debug')('test:users');
+var debug = require('debug')('test:function:users');
 var request = require('supertest');
 var should = require('should');
 var security = require('../../models/security');
-var helpers = require('./helpers');
+var helpers = require('../helpers');
 
 before((done) => {
   helpers.startServer(done);

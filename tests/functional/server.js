@@ -1,9 +1,9 @@
 'use strict';
 
-var debug = require('debug')('test:server');
+var debug = require('debug')('test:function:server');
 var request = require('supertest');
 var should = require('should');
-var helpers = require('./helpers');
+var helpers = require('../helpers');
 
 before((done) => helpers.startServer(done));
 

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @class
+ * @class Security
  * @classdesc Security/encryption functions
  */
 var Security = function() {
@@ -11,6 +11,7 @@ var Security = function() {
 
   /**
    * Generate a random string of base64 characters
+   * @memberof Security
    * @param  {Integer} length length of string to generate
    * @return {String}        base64 string
    */
@@ -20,6 +21,7 @@ var Security = function() {
 
   /**
    * Turn plaintext password into a bcrypt hash
+   * @memberof Security
    * @param  {String} password the plaintext password
    * @return {String}          hashed password
    */
@@ -30,6 +32,7 @@ var Security = function() {
 
   /**
    * Validate a password against a stored, hashed password
+   * @memberof Security
    * @param  {String} givenPassword plaintext password
    * @param  {String} savedPassword saved hash
    * @return {Boolean}               result of comparison
@@ -40,6 +43,7 @@ var Security = function() {
 
   /**
    * Generate a basic Authorization header for user login
+   * @memberof Security
    * header looks like 'Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
    * @param  {String} email    user's email
    * @param  {String} password user's password
@@ -52,6 +56,7 @@ var Security = function() {
 
   /**
    * Parse API Authorization header into an object
+   * @memberof Security
    * header to be parsed looks like: 'X-API-Authorization: key=%key, token=%token, ts=%timestamp'
    * @param  {String} header text of X-API-Authorization header
    * @return {Object}        object containing {key, token, ts}
@@ -64,6 +69,7 @@ var Security = function() {
 
   /**
    * Generate API token
+   * @memberof Security
    * @param  {String} key       API key
    * @param  {String} secret    API secret
    * @param  {Integer} [timestamp] timestamp in seconds - optional. If not provided, current time is used
@@ -78,6 +84,7 @@ var Security = function() {
 
   /**
    * Validate a given token, by regenrating a token based on given data, and comparing
+   * @memberof Security
    * @param  {String} token     token to validate
    * @param  {String} key       API key
    * @param  {String} secret    API secret

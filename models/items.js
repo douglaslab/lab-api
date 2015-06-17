@@ -5,14 +5,47 @@ var helper = require('./modelHelper');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 
 /**
- * @class
+ * @class ItemsModel
  * @classdesc model for items management
  */
 var ItemsModel = function() {
   var ItemModel = require('./schemas/item');
 
   /**
+   * Turns query string parameters into a list of Mongoose search terms<br>
+   * @memberof ItemsModel
+   * By default, terms are conjunctive (i.e. term1 AND term2 AND...), unless 'operator=or' is specified<br>
+   * Search will be case insensitive, unless 'ignorecase=false' is specified
+   *
+   * @param  {Object} query query string object, containing key and values
+   * @return {Object}       Mongoose search object
+   */
+  var parseQueryParameters = function(query) {
+    var operator = '$and';
+    var ignoreCase = true;
+    var search = {};
+
+    if(query.operator) {
+      operator = '$' + query.operator;
+      delete query.operator;
+    }
+    if(query.ignorecase) {
+      ignoreCase = query.ignorecase;
+      delete query.ignorecase;
+    }
+
+    search[operator] = Object.keys(query).map(key => {
+      var obj = {};
+      obj['properties.' + key] = ignoreCase ? {'$regex': new RegExp(query[key], 'i') } : query[key];
+      return obj;
+    });
+    debug(search);
+    return search;
+  };
+
+  /**
    * Get all items
+   * @memberof ItemsModel
    * User can provide query parameters to search over properties<br>
    * Query string will be in the form of field1=value1&field2=value2...<br>
    * By default, terms are conjunctive (i.e. term1 AND term2 AND...), unless 'operator=or' is specified<br>
@@ -25,7 +58,7 @@ var ItemsModel = function() {
    * @param  {Function} next next operation
    */
   this.findAll = function(req, res, next) {
-    var search = Object.keys(req.query).length > 0 ? helper.parseQueryParameters(req.query) : {};
+    var search = Object.keys(req.query).length > 0 ? parseQueryParameters(req.query) : {};
     ItemModel.find(search, (err, items) => {
       if(err) {
         helper.handleError(500, err, res);
@@ -40,6 +73,7 @@ var ItemsModel = function() {
 
   /**
    * Finds an item by its id
+   * @memberof ItemsModel
    * @param  {Object}   req  Request object, containing the id parameter
    * @param  {Object}   res  Response object
    * @param  {Function} next next operation
@@ -69,6 +103,7 @@ var ItemsModel = function() {
 
   /**
    * Creates a new item
+   * @memberof ItemsModel
    * @param  {Object}   req  Request object, containing body object with item properties
    * @param  {Object}   res  Response object
    * @param  {Function} next next operation
@@ -93,6 +128,7 @@ var ItemsModel = function() {
 
   /**
    * Updates an existing item
+   * @memberof ItemsModel
    * @param  {Object}   req  [description]
    * @param  {Object}   req  Request object, containing body object with item properties
    * @param  {Object}   res  Response object
@@ -148,6 +184,7 @@ var ItemsModel = function() {
 
   /**
    * Delete item
+   * @memberof ItemsModel
    * @param  {Object}   req  Request object, containing item id
    * @param  {Object}   res  Response object
    * @param  {Function} next next operation

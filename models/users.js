@@ -6,13 +6,20 @@ var util = require('util'); //TODO: util.format can be removed when Node starts 
 var config = require('../configs/service');
 
 /**
- * @class
+ * @class UsersModel
  * @classdesc model for users management
  */
 var UsersModel = function() {
   var UserModel = require('./schemas/user');
   var security = require('./security');
 
+  /**
+   * Check if user permission level meets/exceeds required level
+   * @memberof UsersModel
+   * @param  {String} userLevel     User permission level - currently, one of USER, MANAGER, ADMIN
+   * @param  {String} requiredLevel Required permission level - currently, one of USER, MANAGER, ADMIN
+   * @return {Boolean}
+   */
   var checkPermissionLevel = function(userLevel, requiredLevel) {
     var levels = UserModel.schema.path('permissionLevel').enumValues;
     return levels.indexOf(userLevel) >= levels.indexOf(requiredLevel);
@@ -20,6 +27,7 @@ var UsersModel = function() {
 
   /**
    * Get all users
+   * @memberof UsersModel
    * @param  {Object}   req  Request object
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
@@ -39,6 +47,7 @@ var UsersModel = function() {
 
   /**
    * Find a user by email
+   * @memberof UsersModel
    * @param  {Object}   req  Request object - params contains email
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
@@ -62,7 +71,8 @@ var UsersModel = function() {
 
   /**
    * Return the validation middleware function, for the required permission level
-   * @param  {String} requiredPermissionLevel currenly, one of USER, MANAGER, ADMIN
+   * @memberof UsersModel
+   * @param  {String} requiredPermissionLevel currently, one of USER, MANAGER, ADMIN
    * @return {Function}                         See internal function for full comment
    * @see validateTokenAndPermission
    */
@@ -86,6 +96,7 @@ var UsersModel = function() {
           }
           else {
             if(user) {
+              debug(user);
               if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
                 if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
                   return next();
@@ -101,6 +112,7 @@ var UsersModel = function() {
             else {
               helper.handleError(404, util.format('user with key: %s not found', header.key), res);
             }
+            return next();
           }
         });
       }
@@ -109,6 +121,7 @@ var UsersModel = function() {
 
   /**
    * Allow user login by email/password
+   * @memberof UsersModel
    * @param  {Object}   req  Request object - email and password passed in the Authorization header
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
@@ -143,6 +156,7 @@ var UsersModel = function() {
 
   /**
    * Create a new user
+   * @memberof UsersModel
    * @param  {Object}   req  Request object - body property contains user fields
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
@@ -178,6 +192,7 @@ var UsersModel = function() {
 
   /**
    * Update a user
+   * @memberof UsersModel
    * @param  {Object}   req  Request object - body property contains user fields
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
@@ -206,6 +221,7 @@ var UsersModel = function() {
 
   /**
    * Delete a user
+   * @memberof UsersModel
    * @param  {Object}   req  Request object - params contains email
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation

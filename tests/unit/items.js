@@ -8,6 +8,7 @@ var helpers = require('../helpers');
 var testUser = {};
 
 before((done) => {
+  should;
   helpers.createTestUser('USER', (err, user) => {
     testUser = err ? null : user;
     done(err);

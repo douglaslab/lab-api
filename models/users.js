@@ -198,11 +198,13 @@ var UsersModel = function() {
    * @param  {Function} next Next operation
    */
   this.update = function(req, res, next) {
-    if(helper.isEmpty(req.body)) {
+    var updated = req.body;
+    if(helper.isEmpty(updated)) {
       helper.handleError(400, 'malformed input', res);
       return next();
     }
-    req.body.modified = Date.now();
+    updated.password = security.hashPassword(updated.password);
+    updated.modified = Date.now();
     UserModel.findOneAndUpdate({email: req.params.email}, req.body, {new: true}, (err, updatedUser) => {
       if(err) {
         helper.handleError(500, err, res);

@@ -5,9 +5,20 @@ var request = require('supertest');
 var should = require('should');
 var security = require('../../models/security');
 var helpers = require('../helpers');
+var testUser = {};
 
 before((done) => {
-  helpers.startServer(done);
+  helpers.startServer(() => {
+    helpers.createTestUser('ADMIN', (error, user) => {
+      if(error) {
+        done(error);
+      }
+      else {
+        testUser = user;
+        done();
+      }
+    });
+  });
 });
 
 describe('Users functional tests', () => {
@@ -22,6 +33,7 @@ describe('Users functional tests', () => {
   it('should Create a new user', (done) => {
     request(process.env.TEST_URL)
       .post('/users')
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .send(newUser)
       .expect('Content-Type', /json/)
       .expect(201)
@@ -57,6 +69,7 @@ describe('Users functional tests', () => {
   it('should Retrieve the created user', (done) => {
     request(process.env.TEST_URL)
       .get('/users/' + newUser.email)
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -74,6 +87,7 @@ describe('Users functional tests', () => {
   it('should Retrieve all users', (done) => {
     request(process.env.TEST_URL)
       .get('/users')
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -92,6 +106,7 @@ describe('Users functional tests', () => {
     newUser.name = 'updated user';
     request(process.env.TEST_URL)
       .put('/users/' + newUser.email)
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .send(newUser)
       .expect('Content-Type', /json/)
       .expect(200)
@@ -110,6 +125,7 @@ describe('Users functional tests', () => {
   it('should Delete the created delete', (done) => {
     request(process.env.TEST_URL)
       .del('/users/' + newUser.email)
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -119,5 +135,12 @@ describe('Users functional tests', () => {
         res.body.error.should.be.false;
         return done();
       });
+  });
+});
+
+after((done) => {
+  helpers.deleteTestUser(testUser.email, () => {
+    helpers.stopServer();
+    done();
   });
 });

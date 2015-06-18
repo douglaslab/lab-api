@@ -99,6 +99,7 @@ var UsersModel = function() {
             if(user) {
               debug(user);
               if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
+                debug(user.permissionLevel, requiredPermissionLevel);
                 if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
                   req.user = user.name;
                   return next();
@@ -131,7 +132,6 @@ var UsersModel = function() {
   this.login = function(req, res, next) {
     var email = req.authorization.basic.username;
     var password = req.authorization.basic.password;
-    console.log(email, password);
     if(!email || !password) {
       helper.handleError(401, 'incorrect email/password', res);
       return next();

@@ -37,6 +37,7 @@ mongoose.connection.on('open', () => {
   require('./routes/global')(server, true);
   require('./routes/items')(server);
   require('./routes/users')(server);
+  require('./routes/admin')(server);
 });
 
 

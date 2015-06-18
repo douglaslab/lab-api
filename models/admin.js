@@ -2,8 +2,6 @@
 
 var debug = require('debug')('admin');
 var helper = require('./modelHelper');
-var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
-var config = require('../configs/service');
 
 /**
  * @class AdminModel

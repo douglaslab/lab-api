@@ -2,8 +2,6 @@
 
 var debug = require('debug')('admin');
 var helper = require('./modelHelper');
-var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
-var config = require('../configs/service');
 
 /**
  * @class AdminModel
@@ -14,7 +12,7 @@ var AdminModel = function() {
 
   /**
    * Get audits log
-   * @memberof UsersModel
+   * @memberof AdminModel
    * @param  {Object}   req  Request object - query contains search criteria
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
@@ -33,7 +31,7 @@ var AdminModel = function() {
         if(!search.created) {
           search.created = {};
         }
-        search.created.$lt = criteria.to ? new Date(parseInt(criteria.to, 10)) : new Date();
+        search.created.$lt = criteria.to ? new Date(parseInt(criteria.to, 10)) : Date.now();
       }
       else {
         search[field] = criteria[field];

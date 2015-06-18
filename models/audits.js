@@ -1,7 +1,6 @@
 'use strict';
 
 var debug = require('debug')('audit');
-var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 
 /**
  * @class Audits
@@ -16,7 +15,13 @@ var Audits = function() {
    * @param  {Function} callback callback
    */
   this.get = function(search, callback) {
-    AuditModel.find(search, callback);
+    debug(search);
+    AuditModel.find(search, (err, result) => {
+      if(!err) {
+        result = result.map(item => item.toObject());
+      }
+      callback(err, result);
+    });
   };
 
   this.create = function(entry, callback) {

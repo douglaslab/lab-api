@@ -132,7 +132,6 @@ var UsersModel = function() {
   this.login = function(req, res, next) {
     var email = req.authorization.basic.username;
     var password = req.authorization.basic.password;
-    console.log(email, password);
     if(!email || !password) {
       helper.handleError(401, 'incorrect email/password', res);
       return next();

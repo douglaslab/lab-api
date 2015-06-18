@@ -4,6 +4,7 @@ var debug = require('debug')('test:helpers');
 var httpMocks = require('node-mocks-http');
 var server = require('../server');
 var users = require('../models/users');
+var security = require('../models/security');
 
 var generateRandomUser = function(permissionLevel) {
   var rand = Math.floor(Math.random() * 1000000);
@@ -14,6 +15,14 @@ var generateRandomUser = function(permissionLevel) {
     permissionLevel: permissionLevel,
     school: 'UCSF'
   };
+};
+
+
+exports.generateAuthorizationHeader = function(user) {
+  var util = require('util');
+  var timestamp = parseInt(Date.now() / 1000, 10);
+  var token = security.generateToken(user.apiKey, user.apiSecret, timestamp);
+  return util.format('key=%s, token=%s, ts=%s', user.apiKey, token, timestamp);
 };
 
 //helper function to start the service for tests
@@ -30,6 +39,11 @@ exports.startServer = function(done) {
   else {
     done();
   }
+};
+
+//stop API server
+exports.stopServer = function() {
+  server.close();
 };
 
 exports.createTestUser = function(permissionLevel, callback) {

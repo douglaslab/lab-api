@@ -3,21 +3,20 @@
 var debug = require('debug')('test:function:items');
 var request = require('supertest');
 var should = require('should');
-var security = require('../../models/security');
 var helpers = require('../helpers');
 var testUser = {};
 
-var generateAuthorizationHeader = function() {
-  var util = require('util');
-  var timestamp = parseInt(Date.now() / 1000, 10);
-  var token = security.generateToken(testUser.apiKey, testUser.apiSecret, timestamp);
-  return util.format('key=%s, token=%s, ts=%s', testUser.apiKey, token, timestamp);
-};
-
 before((done) => {
-  helpers.createTestUser('USER', (err, user) => {
-    testUser = err ? null : user;
-    done(err);
+  helpers.startServer(() => {
+    helpers.createTestUser('USER', (error, user) => {
+      if(error) {
+        done(error);
+      }
+      else {
+        testUser = user;
+        done();
+      }
+    });
   });
 });
 
@@ -32,7 +31,7 @@ describe('Items functional tests', () => {
   it('should Create a new item', (done) => {
     request(process.env.TEST_URL)
       .post('/items')
-      .set('X-API-Authorization', generateAuthorizationHeader())
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .send(newItem)
       .expect('Content-Type', /json/)
       .expect(201)
@@ -53,7 +52,7 @@ describe('Items functional tests', () => {
   it('should Retrieve the created item', (done) => {
     request(process.env.TEST_URL)
       .get('/items/' + id)
-      .set('X-API-Authorization', generateAuthorizationHeader())
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -73,7 +72,7 @@ describe('Items functional tests', () => {
   it('should Retrieve all items', (done) => {
     request(process.env.TEST_URL)
       .get('/items')
-      .set('X-API-Authorization', generateAuthorizationHeader())
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -92,7 +91,7 @@ describe('Items functional tests', () => {
     newItem.name = 'updated';
     request(process.env.TEST_URL)
       .put('/items/' + id)
-      .set('X-API-Authorization', generateAuthorizationHeader())
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .send(newItem)
       .expect('Content-Type', /json/)
       .expect(200)
@@ -116,7 +115,7 @@ describe('Items functional tests', () => {
     };
     request(process.env.TEST_URL)
       .put('/items/' + id + '/true')
-      .set('X-API-Authorization', generateAuthorizationHeader())
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .send(item)
       .expect('Content-Type', /json/)
       .expect(200)
@@ -138,7 +137,7 @@ describe('Items functional tests', () => {
   it('should Delete the created item', (done) => {
     request(process.env.TEST_URL)
       .del('/items/' + id)
-      .set('X-API-Authorization', generateAuthorizationHeader())
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {
@@ -152,5 +151,8 @@ describe('Items functional tests', () => {
 });
 
 after((done) => {
-  helpers.deleteTestUser(testUser.email, done);
+  helpers.deleteTestUser(testUser.email, () => {
+    helpers.stopServer();
+    done();
+  });
 });

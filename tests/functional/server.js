@@ -33,3 +33,5 @@ describe('Server functional tests', () => {
       });
   });
 });
+
+after(() => helpers.stopServer());

@@ -4,18 +4,9 @@ var debug = require('debug')('test:unit:items');
 var should = require('should');
 var httpMocks = require('node-mocks-http');
 var items = require('../../models/items');
-var helpers = require('../helpers');
-var testUser = {};
-
-before((done) => {
-  should;
-  helpers.createTestUser('USER', (err, user) => {
-    testUser = err ? null : user;
-    done(err);
-  });
-});
 
 describe('Items unit tests', () => {
+  should;
   var id = null;
   var newItem = {
     name: 'balance',
@@ -220,8 +211,4 @@ describe('Items unit tests', () => {
       return done();
     });
   });
-});
-
-after((done) => {
-  helpers.deleteTestUser(testUser.email, done);
 });

@@ -15,22 +15,7 @@ var Audits = function() {
    * @param  {Object}   entry    Can have the fields {user, entity, action, comment}
    * @param  {Function} callback callback
    */
-  this.get = function(criteria, callback) {
-    var search = {};
-    for(var field of criteria) {
-      if(field === 'from' || field === 'to') {
-        search.created = {
-          '$gte': new Date(criteria.from),
-          '$lt': criteria.to ? new Date(criteria.to) : new Date()
-        };
-        delete criteria.from;
-        delete criteria.to;
-      }
-      else {
-        search[field] = criteria[field];
-      }
-    }
-    debug(search);
+  this.get = function(search, callback) {
     AuditModel.find(search, callback);
   };
 

@@ -99,6 +99,7 @@ var UsersModel = function() {
             if(user) {
               debug(user);
               if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
+                debug(user.permissionLevel, requiredPermissionLevel);
                 if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
                   req.user = user.name;
                   return next();

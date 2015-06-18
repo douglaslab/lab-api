@@ -16,7 +16,12 @@ var Audits = function() {
    * @param  {Function} callback callback
    */
   this.get = function(search, callback) {
-    AuditModel.find(search, callback);
+    AuditModel.find(search, (err, result) => {
+      if(!err) {
+        result = result.map(item => item.toObject());
+      }
+      callback(err, result);
+    });
   };
 
   this.create = function(entry, callback) {

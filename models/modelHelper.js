@@ -2,6 +2,7 @@
 
 var debug = require('debug')('helper');
 var ObjectId = require('mongoose').Types.ObjectId;
+var audits = require('./audits');
 
 /**
  * @class Helper
@@ -46,6 +47,27 @@ var Helper = function() {
     }
     debug(err);
     res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
+  };
+
+  /**
+   * Add an entry to the audits log
+   * @param  {Object} user    User object
+   * @param  {String} entity  Entity name
+   * @param  {String} action  Action carried out
+   * @param  {String} comment Comment
+   */
+  this.log = function(user, entity, action, comment) {
+    var entry = {
+      user: user || 'unrecognized',
+      entity: entity,
+      action: action,
+      comment: comment || ''
+    };
+    audits.create(entry, (err) => {
+      if(err) {
+        console.error('could not log %s because %s', JSON.stringify(entry), err.message);
+      }
+    });
   };
 };
 

@@ -12,6 +12,7 @@ var config = require('../configs/service');
 var UsersModel = function() {
   var UserModel = require('./schemas/user');
   var security = require('./security');
+  var audits = require('./audits');
 
   /**
    * Check if user permission level meets/exceeds required level
@@ -90,7 +91,7 @@ var UsersModel = function() {
       }
       else {
         var header = security.parseApiAuthorizationHeader(apiAuthHeader);
-        UserModel.findOne({apiKey: header.key}, 'apiKey apiSecret permissionLevel', (err, user) => {
+        UserModel.findOne({apiKey: header.key}, 'name apiKey apiSecret permissionLevel', (err, user) => {
           if(err) {
             helper.handleError(500, err, res);
           }
@@ -99,6 +100,7 @@ var UsersModel = function() {
               debug(user);
               if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
                 if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
+                  req.user = user.name;
                   return next();
                 }
                 else {
@@ -129,6 +131,7 @@ var UsersModel = function() {
   this.login = function(req, res, next) {
     var email = req.authorization.basic.username;
     var password = req.authorization.basic.password;
+    console.log(email, password);
     if(!email || !password) {
       helper.handleError(401, 'incorrect email/password', res);
       return next();
@@ -141,6 +144,7 @@ var UsersModel = function() {
         if(user) {
           if(security.validatePassword(password, user.password)) {
             res.json(200, {error: false, data: user.toObject()});
+            helper.log(user.name, 'user', 'login');
           }
           else {
             helper.handleError(401, 'incorrect password', res);
@@ -168,8 +172,8 @@ var UsersModel = function() {
       helper.handleError(400, 'malformed input - user must have at least email, password, and name properties', res);
       return next();
     }
-    newUser.permissionLevel = UserModel.schema.path('permissionLevel').enumValues.indexOf(req.body.permissionLevel) !== -1 ?
-      req.body.permissionLevel : 'USER';
+    newUser.permissionLevel = UserModel.schema.path('permissionLevel').enumValues.indexOf(newUser.permissionLevel) !== -1 ?
+      newUser.permissionLevel : 'USER';
     newUser.password = security.hashPassword(req.body.password);
     newUser.apiKey = security.generateRandomBytes(32);
     newUser.apiSecret = security.generateRandomBytes(32);
@@ -185,6 +189,7 @@ var UsersModel = function() {
       }
       else {
         res.json(201, {error: false, data: user.toObject()});
+        helper.log(req.user, 'user', 'create', user.email);
       }
       return next();
     });
@@ -212,6 +217,7 @@ var UsersModel = function() {
       else {
         if(updatedUser) {
           res.json(200, {error: false, data: updatedUser.toObject()});
+          helper.log(req.user, 'user', 'update', updatedUser.email);
         }
         else {
           helper.handleError(404, util.format('User: %s not found', req.params.email), res);
@@ -236,10 +242,31 @@ var UsersModel = function() {
       else {
         if(user) {
           res.json(200, {error: false, data: util.format('user %s deleted successfully', user.email)});
+          helper.log(req.user, 'user', 'update', user.email);
         }
         else {
           helper.handleError(404, util.format('User: %s not found', req.params.email), res);
         }
+      }
+      return next();
+    });
+  };
+
+  /**
+   * Get audits log
+   * @memberof UsersModel
+   * @param  {Object}   req  Request object - query contains search criteria
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
+  this.audit = function(req, res, next) {
+    var criteria = req.query;
+    audits.get(criteria, (err, result) => {
+      if(err) {
+        helper.handleError(500, err, res);
+      }
+      else {
+        res.json(200, {error: false, data: result});
       }
       return next();
     });

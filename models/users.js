@@ -137,6 +137,7 @@ var UsersModel = function() {
     }
     UserModel.findOne({email: email}, '+password', (err, user) => {
       if(err) {
+        console.error(err);
         helper.handleError(500, err, res);
       }
       else {
@@ -150,7 +151,8 @@ var UsersModel = function() {
           }
         }
         else {
-          helper.handleError(404, ('user: %s not found', req.body.email), res);
+          debug('user: %s not found', email);
+          helper.handleError(404, util.format('user: %s not found', email), res);
         }
       }
       return next();

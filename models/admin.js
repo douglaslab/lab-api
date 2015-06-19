@@ -39,7 +39,7 @@ var AdminModel = function() {
       }
     });
     debug(criteria, search);
-    AuditModel.find(search, (err, result) => {
+    AuditModel.find(search).sort('-created').exec((err, result) => {
       if(err) {
         helper.handleError(500, err, res);
       }

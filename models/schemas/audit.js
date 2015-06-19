@@ -8,7 +8,7 @@ var AuditSchema = new Schema({
     entity: {type: String, required: true},
     action: {type: String, required: true},
     comment: String,
-    created: {type: Date, default: Date.now, select: false}
+    created: {type: Date, default: Date.now}
   }, {
   toObject: {
     transform: (doc, ret) => {

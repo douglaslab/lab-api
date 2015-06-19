@@ -8,7 +8,8 @@ var helper = require('./modelHelper');
  * @classdesc model for users management
  */
 var AdminModel = function() {
-  var audits = require('./audits');
+  var AuditModel = require('./schemas/audit');
+  //var PermissionModel = require('./schemas/permission');
 
   /**
    * Get audits log
@@ -17,7 +18,7 @@ var AdminModel = function() {
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
    */
-  this.audit = function(req, res, next) {
+  this.getAuditLog = function(req, res, next) {
     var criteria = req.query;
     var search = {};
     Object.keys(criteria).forEach((field) => {
@@ -38,15 +39,20 @@ var AdminModel = function() {
       }
     });
     debug(criteria, search);
-    audits.get(search, (err, result) => {
+    AuditModel.find(search, (err, result) => {
       if(err) {
         helper.handleError(500, err, res);
       }
       else {
-        res.json(200, {error: false, data: result});
+        res.json(200, {error: false, data: result.map(item => item.toObject())});
       }
       return next();
     });
+  };
+
+  this.log = function(entry, callback) {
+    var newEntry = new AuditModel(entry);
+    newEntry.save(callback);
   };
 };
 

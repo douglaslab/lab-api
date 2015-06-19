@@ -12,7 +12,6 @@ var config = require('../configs/service');
 var UsersModel = function() {
   var UserModel = require('./schemas/user');
   var security = require('./security');
-  var audits = require('./audits');
 
   /**
    * Check if user permission level meets/exceeds required level
@@ -247,26 +246,6 @@ var UsersModel = function() {
         else {
           helper.handleError(404, util.format('User: %s not found', req.params.email), res);
         }
-      }
-      return next();
-    });
-  };
-
-  /**
-   * Get audits log
-   * @memberof UsersModel
-   * @param  {Object}   req  Request object - query contains search criteria
-   * @param  {Object}   res  Response object
-   * @param  {Function} next Next operation
-   */
-  this.audit = function(req, res, next) {
-    var criteria = req.query;
-    audits.get(criteria, (err, result) => {
-      if(err) {
-        helper.handleError(500, err, res);
-      }
-      else {
-        res.json(200, {error: false, data: result});
       }
       return next();
     });

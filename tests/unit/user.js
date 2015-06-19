@@ -87,36 +87,34 @@ describe('Users unit tests', () => {
     });
   });
 
-  // it('should Update the created user', (done) => {
-  //   newUser.name = 'updated user';
-  //   request(process.env.TEST_URL)
-  //     .put('/users/' + newUser.email)
-  //     .send(newUser)
-  //     .expect('Content-Type', /json/)
-  //     .expect(200)
-  //     .end((err, res) => {
-  //       debug(res.body);
-  //       should.not.exist(err);
-  //       res.body.should.have.property('error');
-  //       res.body.error.should.be.false;
-  //       res.body.should.have.property('data');
-  //       res.body.data.should.have.property('name');
-  //       res.body.data.name.should.equal(newUser.name);
-  //       return done();
-  //     });
-  // });
+  it('should Update the created user', (done) => {
+    newUser.name = 'updated user';
+    let user = JSON.parse(JSON.stringify(newUser)); //clone newUser so it won't mutate
+    let req = httpMocks.createRequest({params: {email: newUser.email}, body: user});
+    let res = httpMocks.createResponse();
+    users.update(req, res, () => {
+      let result = JSON.parse(res._getData());
+      debug(result);
+      res.statusCode.should.equal(200);
+      result.should.have.property('error');
+      result.error.should.be.false;
+      result.should.have.property('data');
+      result.data.should.have.property('name');
+      result.data.name.should.equal(newUser.name);
+      return done();
+    });
+  });
 
-  // it('should Delete the created delete', (done) => {
-  //   request(process.env.TEST_URL)
-  //     .del('/users/' + newUser.email)
-  //     .expect('Content-Type', /json/)
-  //     .expect(200)
-  //     .end((err, res) => {
-  //       debug(res.body);
-  //       should.not.exist(err);
-  //       res.body.should.have.property('error');
-  //       res.body.error.should.be.false;
-  //       return done();
-  //     });
-  // });
+  it('should Delete the created delete', (done) => {
+    let req = httpMocks.createRequest({params: {email: newUser.email}});
+    let res = httpMocks.createResponse();
+    users.delete(req, res, () => {
+      let result = JSON.parse(res._getData());
+      debug(result);
+      res.statusCode.should.equal(200);
+      result.should.have.property('error');
+      result.error.should.be.false;
+      return done();
+    });
+  });
 });

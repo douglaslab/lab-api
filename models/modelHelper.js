@@ -1,17 +1,18 @@
 'use strict';
 
 var debug = require('debug')('helper');
-var ObjectId = require('mongoose').Types.ObjectId;
-var audits = require('./audits');
 
 /**
- * @class Helper
+ * @class ModelHelper
  * @classdesc various helper functions for other models
  */
-var Helper = function() {
+var ModelHelper = function() {
+  var ObjectId = require('mongoose').Types.ObjectId;
+  var admin = require('./admin');
+
   /**
    * Check if an object is empty
-   * @memberof Helper
+   * @memberof ModelHelper
    * @param  {Object}  obj object to test
    * @return {Boolean}
    */
@@ -21,7 +22,7 @@ var Helper = function() {
 
   /**
    * Convert id string to a Mongoose ID
-   * @memberof Helper
+   * @memberof ModelHelper
    * @param  {String} id id as received from user
    * @return {Object}    Mongoose ID, or null if ilegal
    */
@@ -36,7 +37,7 @@ var Helper = function() {
 
   /**
    * Return error in JSON format
-   * @memberof Helper
+   * @memberof ModelHelper
    * @param  {Integer} errorCode HTTP error code
    * @param  {Object} err       Error object - can be a string
    * @param  {Object} res       Response object
@@ -51,6 +52,7 @@ var Helper = function() {
 
   /**
    * Add an entry to the audits log
+   * @memberOf ModelHelper
    * @param  {Object} user    User object
    * @param  {String} entity  Entity name
    * @param  {String} action  Action carried out
@@ -63,12 +65,9 @@ var Helper = function() {
       action: action,
       comment: comment || ''
     };
-    audits.create(entry, (err) => {
-      if(err) {
-        console.error('could not log %s because %s', JSON.stringify(entry), err.message);
-      }
-    });
+    debug('logging ', entry);
+    admin.log(entry, (err) => err && console.error('could not log %s because %s', JSON.stringify(entry), err.message));
   };
 };
 
-module.exports = new Helper();
+module.exports = new ModelHelper();

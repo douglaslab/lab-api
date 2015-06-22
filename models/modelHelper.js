@@ -59,14 +59,20 @@ var ModelHelper = function() {
    * @param  {String} comment Comment
    */
   this.log = function(user, entity, action, comment) {
-    var entry = {
-      user: user || 'unrecognized',
-      entity: entity,
-      action: action,
-      comment: comment || ''
-    };
-    debug('logging ', entry);
-    admin.log(entry, (err) => err && console.error('could not log %s because %s', JSON.stringify(entry), err.message));
+    //ignore users created during tests, of form TEST123456789
+    if(!user || user.search(/TEST\d{9}/) !== -1) {
+      debug('unit test in progress - skipping log', entity, action, comment);
+    }
+    else {
+      var entry = {
+        user: user,
+        entity: entity,
+        action: action,
+        comment: comment || ''
+      };
+      debug('logging ', entry);
+      admin.log(entry, (err) => err && console.error('could not log %s because %s', JSON.stringify(entry), err.message));
+    }
   };
 };
 

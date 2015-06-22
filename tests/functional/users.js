@@ -22,10 +22,9 @@ before((done) => {
 });
 
 describe('Users functional tests', () => {
-  var rand = Math.floor(Math.random() * 1000000);
   var newUser = {
-    name: rand,
-    email: rand + '@example.com',
+    name: helpers.randomUserName(),
+    email: helpers.randomUserName() + '@example.com',
     password: 'blahblah',
     school: 'UCSF'
   };

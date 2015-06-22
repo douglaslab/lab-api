@@ -50,6 +50,12 @@ var AdminModel = function() {
     });
   };
 
+  /**
+   * Log event in the audit log
+   * @memberof AdminModel
+   * @param  {Object}   entry    entry has {element, action, user, comment} fields
+   * @param  {Function} callback callback function
+   */
   this.log = function(entry, callback) {
     var newEntry = new AuditModel(entry);
     newEntry.save(callback);

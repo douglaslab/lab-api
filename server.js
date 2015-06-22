@@ -18,6 +18,7 @@ server.use((req, res, next) => {
 
 //Server helpers
 server.use(restify.acceptParser(server.acceptable))
+  .use(restify.gzipResponse())
   .use(restify.queryParser({mapParams: false}))
   .use(restify.bodyParser({mapParams: false}))
   .use(restify.authorizationParser())

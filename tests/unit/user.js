@@ -4,13 +4,13 @@ var debug = require('debug')('test:unit:users');
 var should = require('should');
 var httpMocks = require('node-mocks-http');
 var users = require('../../models/users');
+var helpers = require('../helpers');
 
 describe('Users unit tests', () => {
   should;
-  var rand = Math.floor(Math.random() * 1000000);
   var newUser = {
-    name: rand,
-    email: rand + '@example.com',
+    name: helpers.randomUserName(),
+    email: helpers.randomUserName() + '@example.com',
     password: 'blahblah',
     school: 'UCSF'
   };

@@ -6,17 +6,21 @@ var server = require('../server');
 var users = require('../models/users');
 var security = require('../models/security');
 
+var randomUserName = function() {
+  return 'TEST' + Math.random().toString().slice(2, 11);
+};
+
 var generateRandomUser = function(permissionLevel) {
-  var rand = Math.floor(Math.random() * 1000000);
   return {
-    name: 'test' + rand,
-    email: 'test' + rand + '@example.com',
+    name: randomUserName(),
+    email: randomUserName() + '@example.com',
     password: 'blahblah',
     permissionLevel: permissionLevel,
     school: 'UCSF'
   };
 };
 
+exports.randomUserName = randomUserName;
 
 exports.generateAuthorizationHeader = function(user) {
   var util = require('util');

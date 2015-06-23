@@ -17,10 +17,13 @@ var createDefaultAdminUser = function(callback) {
   var UserModel = require('../models/schemas/user');
   var security = require('../models/security');
   var user = {
-    email: 'test@ucsf.com',
+    email: 'test@ucsf.edu',
     name: 'Test User',
+    school: 'ucsf',
     password: security.hashPassword('password'),
-    school: 'ucsf'
+    apiKey: security.generateRandomBytes(32),
+    apiSecret: security.generateRandomBytes(32),
+    permissionLevel: 'ADMIN'
   };
   UserModel.findOneAndUpdate({email: user.email}, user, {upsert: true}, (err) => {
     if(err) {

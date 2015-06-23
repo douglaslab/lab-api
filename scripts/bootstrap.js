@@ -19,10 +19,11 @@ var createDefaultAdminUser = function(callback) {
   var user = {
     email: 'test@ucsf.edu',
     name: 'Test User',
+    school: 'ucsf',
     password: security.hashPassword('password'),
     apiKey: security.generateRandomBytes(32),
     apiSecret: security.generateRandomBytes(32),
-    school: 'ucsf'
+    permissionLevel: 'ADMIN'
   };
   UserModel.findOneAndUpdate({email: user.email}, user, {upsert: true}, (err) => {
     if(err) {

@@ -54,7 +54,8 @@ var AdminModel = function() {
 
   this.getPermissions = function(req, res, next) {
     var search = {};
-    req.params.forEach(param => search[param] = req.params[param]);
+    Object.keys(req.query).forEach(param => search[param] = req.query[param]);
+    debug(search);
     PermissionModel.find(search, (err, result) => {
       if(err) {
         helper.handleError(500, err, res);

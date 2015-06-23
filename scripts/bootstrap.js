@@ -20,6 +20,8 @@ var createDefaultAdminUser = function(callback) {
     email: 'test@ucsf.edu',
     name: 'Test User',
     password: security.hashPassword('password'),
+    apiKey: security.generateRandomBytes(32),
+    apiSecret: security.generateRandomBytes(32),
     school: 'ucsf'
   };
   UserModel.findOneAndUpdate({email: user.email}, user, {upsert: true}, (err) => {

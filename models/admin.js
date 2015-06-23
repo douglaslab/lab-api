@@ -93,7 +93,7 @@ var AdminModel = function() {
       }
       result.save((err2, result2) => {
         if(err2) {
-          helper.handleError(500, err2, res);
+          helper.handleError(401, err2, res);
         }
         else {
           debug(result2);
@@ -105,21 +105,6 @@ var AdminModel = function() {
         return next();
       });
     });
-
-    // PermissionModel.findOneAndUpdate(query, update, options, (err, result) => {
-    //   if(err) {
-    //     console.error(err);
-    //     helper.handleError(500, err, res);
-    //   }
-    //   else {
-    //     debug(result);
-    //     if(result) {
-    //       res.json(201, {error: false, data: result.toObject()});
-    //       helper.log(req.user.email, ELEMENT, 'add', util.format('%s %s %s', query.element, query.action, update.permissionRequired));
-    //     }
-    //   }
-    //   return next();
-    // });
   };
 };
 

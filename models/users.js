@@ -2,8 +2,9 @@
 
 const ELEMENT = 'USER';
 var debug = require('debug')('users');
-var helper = require('./modelHelper');
+var async = require('async');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
+var helper = require('./modelHelper');
 var config = require('../configs/service');
 
 /**
@@ -12,6 +13,7 @@ var config = require('../configs/service');
  */
 var UsersModel = function() {
   var UserModel = require('./schemas/user');
+  var PermissionModel = require('./schemas/permission');
   var security = require('./security');
 
   /**
@@ -77,7 +79,7 @@ var UsersModel = function() {
    * @return {Function}                         See internal function for full comment
    * @see validateTokenAndPermission
    */
-  this.validateUser = function(requiredPermissionLevel) {
+  this.validateUser = function(element, action) {
     /**
      * Validate token of API user
      * @param  {Object}   req  Request object - the authorization header contains token, key, timestamp
@@ -90,34 +92,50 @@ var UsersModel = function() {
         helper.handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);
       }
       else {
-        var header = security.parseApiAuthorizationHeader(apiAuthHeader);
-        UserModel.findOne({apiKey: header.key}, 'name apiKey apiSecret permissionLevel', (err, user) => {
-          if(err) {
-            helper.handleError(500, err, res);
-          }
-          else {
-            if(user) {
-              debug(user);
-              if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
-                debug(user.permissionLevel, requiredPermissionLevel);
-                if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
-                  req.user = user.name;
-                  return next();
-                }
-                else {
-                  helper.handleError(403, 'operation disallowed', res);
-                }
+        let header = security.parseApiAuthorizationHeader(apiAuthHeader);
+        let requiredPermissionLevel = 'USER';
+        async.series([
+          function getPermission(callback) {
+            PermissionModel.findOne({element: element, action: action}, (err, result) => {
+              if(err) {
+                console.log(err);
+              }
+              if(result) {
+                requiredPermissionLevel = result.permissionRequired;
+              }
+              callback(null);
+            });
+          },
+          function getUser() {
+            UserModel.findOne({apiKey: header.key}, 'name apiKey apiSecret permissionLevel', (err, user) => {
+              if(err) {
+                helper.handleError(500, err, res);
               }
               else {
-                helper.handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);
+                if(user) {
+                  debug(user);
+                  if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
+                    debug(user.permissionLevel, requiredPermissionLevel);
+                    if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
+                      req.user = user.name;
+                      return next();
+                    }
+                    else {
+                      helper.handleError(403, 'permission denied', res);
+                    }
+                  }
+                  else {
+                    helper.handleError(401, util.format('incorrect token in %s', config.apiAuthHeader), res);
+                  }
+                }
+                else {
+                  helper.handleError(404, util.format('user with key: %s not found', header.key), res);
+                }
+                return next();
               }
-            }
-            else {
-              helper.handleError(404, util.format('user with key: %s not found', header.key), res);
-            }
-            return next();
+            });
           }
-        });
+        ]);
       }
     };
   };

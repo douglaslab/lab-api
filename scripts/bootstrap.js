@@ -17,7 +17,7 @@ var createDefaultAdminUser = function(callback) {
   var UserModel = require('../models/schemas/user');
   var security = require('../models/security');
   var user = {
-    email: 'test@ucsf.com',
+    email: 'test@ucsf.edu',
     name: 'Test User',
     password: security.hashPassword('password'),
     school: 'ucsf'

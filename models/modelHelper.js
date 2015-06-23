@@ -8,7 +8,7 @@ var debug = require('debug')('helper');
  */
 var ModelHelper = function() {
   var ObjectId = require('mongoose').Types.ObjectId;
-  var admin = require('./admin');
+  var AuditModel = require('./schemas/audit');
 
   /**
    * Check if an object is empty
@@ -64,14 +64,14 @@ var ModelHelper = function() {
       debug('unit test in progress - skipping log', entity, action, comment);
     }
     else {
-      var entry = {
+      var entry = new AuditModel({
         user: user,
         entity: entity,
         action: action,
         comment: comment || ''
-      };
+      });
       debug('logging ', entry);
-      admin.log(entry, (err) => err && console.error('could not log %s because %s', JSON.stringify(entry), err.message));
+      entry.save((err) => err && console.error('could not log %s because %s', JSON.stringify(entry), err.message));
     }
   };
 };

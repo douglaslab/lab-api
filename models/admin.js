@@ -1,6 +1,8 @@
 'use strict';
 
+const ELEMENT = 'PERMISSION';
 var debug = require('debug')('admin');
+var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 var helper = require('./modelHelper');
 
 /**
@@ -9,7 +11,7 @@ var helper = require('./modelHelper');
  */
 var AdminModel = function() {
   var AuditModel = require('./schemas/audit');
-  //var PermissionModel = require('./schemas/permission');
+  var PermissionModel = require('./schemas/permission');
 
   /**
    * Get audits log
@@ -50,15 +52,74 @@ var AdminModel = function() {
     });
   };
 
-  /**
-   * Log event in the audit log
-   * @memberof AdminModel
-   * @param  {Object}   entry    entry has {element, action, user, comment} fields
-   * @param  {Function} callback callback function
-   */
-  this.log = function(entry, callback) {
-    var newEntry = new AuditModel(entry);
-    newEntry.save(callback);
+  this.getPermissions = function(req, res, next) {
+    var search = {};
+    Object.keys(req.query).forEach(param => search[param] = req.query[param]);
+    debug(search);
+    PermissionModel.find(search, (err, result) => {
+      if(err) {
+        helper.handleError(500, err, res);
+      }
+      else {
+        if(result) {
+          res.json(200, {error: false, data: result.map(item => item.toObject())});
+          helper.log(req.user.email, ELEMENT, 'get', util.format('%s', req.params));
+        }
+      }
+      return next();
+    });
+  };
+
+  this.createPermission = function(req, res, next) {
+    var search = {
+      element: req.body.element,
+      action: req.body.action
+    };
+    var update = {
+      element: req.body.element,
+      action: req.body.action,
+      permissionRequired: req.body.permissionRequired
+    };
+    PermissionModel.findOne(search, (err, result) => {
+      if(err) {
+        helper.handleError(500, err, res);
+        return next();
+      }
+      else if(result) {
+        result.permissionRequired = update.permissionRequired;
+      }
+      else {
+        result = new PermissionModel(update);
+      }
+      result.save((err2, result2) => {
+        if(err2) {
+          helper.handleError(500, err2, res);
+        }
+        else {
+          debug(result2);
+          if(result2) {
+            res.json(201, {error: false, data: result2.toObject()});
+            helper.log(req.user.email, ELEMENT, 'add', util.format('%s %s %s', result2.element, result2.action, result2.permissionRequired));
+          }
+        }
+        return next();
+      });
+    });
+
+    // PermissionModel.findOneAndUpdate(query, update, options, (err, result) => {
+    //   if(err) {
+    //     console.error(err);
+    //     helper.handleError(500, err, res);
+    //   }
+    //   else {
+    //     debug(result);
+    //     if(result) {
+    //       res.json(201, {error: false, data: result.toObject()});
+    //       helper.log(req.user.email, ELEMENT, 'add', util.format('%s %s %s', query.element, query.action, update.permissionRequired));
+    //     }
+    //   }
+    //   return next();
+    // });
   };
 };
 

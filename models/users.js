@@ -1,5 +1,6 @@
 'use strict';
 
+const ELEMENT = 'USER';
 var debug = require('debug')('users');
 var helper = require('./modelHelper');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
@@ -137,14 +138,13 @@ var UsersModel = function() {
     }
     UserModel.findOne({email: email}, '+password', (err, user) => {
       if(err) {
-        console.error(err);
         helper.handleError(500, err, res);
       }
       else {
         if(user) {
           if(security.validatePassword(password, user.password)) {
             res.json(200, {error: false, data: user.toObject()});
-            helper.log(user.email, 'user', 'login');
+            helper.log(user.email, ELEMENT, 'login');
           }
           else {
             helper.handleError(401, 'incorrect password', res);
@@ -169,12 +169,12 @@ var UsersModel = function() {
   this.create = function(req, res, next) {
     //verify input is an object
     var newUser = req.body;
+    var levels = UserModel.schema.path('permissionLevel').enumValues;
     if(typeof newUser !== 'object' || !newUser.email || !newUser.password || !newUser.name) {
       helper.handleError(400, 'malformed input - user must have at least email, password, and name properties', res);
       return next();
     }
-    newUser.permissionLevel = UserModel.schema.path('permissionLevel').enumValues.indexOf(newUser.permissionLevel) !== -1 ?
-      newUser.permissionLevel : 'USER';
+    newUser.permissionLevel = levels.indexOf(newUser.permissionLevel) !== -1 ? newUser.permissionLevel : 'USER';
     newUser.password = security.hashPassword(req.body.password);
     newUser.apiKey = security.generateRandomBytes(32);
     newUser.apiSecret = security.generateRandomBytes(32);
@@ -190,7 +190,7 @@ var UsersModel = function() {
       }
       else {
         res.json(201, {error: false, data: user.toObject()});
-        helper.log(req.user, 'user', 'create', user.email);
+        helper.log(req.user, ELEMENT, 'create', user.email);
       }
       return next();
     });
@@ -218,7 +218,7 @@ var UsersModel = function() {
       else {
         if(updatedUser) {
           res.json(200, {error: false, data: updatedUser.toObject()});
-          helper.log(req.user, 'user', 'update', updatedUser.email);
+          helper.log(req.user, ELEMENT, 'update', updatedUser.email);
         }
         else {
           helper.handleError(404, util.format('User: %s not found', req.params.email), res);
@@ -243,7 +243,7 @@ var UsersModel = function() {
       else {
         if(user) {
           res.json(200, {error: false, data: util.format('user %s deleted successfully', user.email)});
-          helper.log(req.user, 'user', 'update', user.email);
+          helper.log(req.user, ELEMENT, 'update', user.email);
         }
         else {
           helper.handleError(404, util.format('User: %s not found', req.params.email), res);

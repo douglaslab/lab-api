@@ -1,6 +1,7 @@
 'use strict';
 
 var mongoose = require('mongoose');
+var permissionLevels = require('../../configs/service').entities.permissionLevels;
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({
@@ -11,7 +12,7 @@ var UserSchema = new Schema({
     company: {type: String},
     apiKey: {type: String, required: true},
     apiSecret: {type: String, required: true},
-    permissionLevel: {type: String, required: true, enum: ['USER', 'MANAGER', 'ADMIN'], default: 'USER'},
+    permissionLevel: {type: String, required: true, enum: permissionLevels, default: 'USER'},
     created: {type: Date, default: Date.now, select: false},
     modified: {type: Date, default: Date.now, select: false}
   }, {

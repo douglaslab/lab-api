@@ -1,12 +1,13 @@
 'use strict';
 
 var mongoose = require('mongoose');
+var entities = require('../../configs/service').entities;
 var Schema = mongoose.Schema;
 
 var PermissionSchema = new Schema({
-    element: {type: String, required: true},
-    action: {type: String, required: true},
-    permissionRequired: {type: String, required: true, enum: ['USER', 'MANAGER', 'ADMIN']},
+    element: {type: String, required: true, enum: entities.elements},
+    action: {type: String, required: true, enum: entities.actions},
+    permissionRequired: {type: String, required: true, enum: entities.permissionLevels},
     created: {type: Date, default: Date.now, select: false},
     modified: {type: Date, default: Date.now, select: false}
   }, {

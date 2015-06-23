@@ -5,14 +5,13 @@ Developers: jump to [installation instructions](#installation).
 ## The API
 
 The API runs at the root (`/`) of the server. *(We have not decided yet how to treat the root itself)*
-To use the API, an authentication header must be provided by the client (see [Authorization](#authorization).<br>
+To use the API, an authentication header must be provided by the client (see [Authorization](#authorization)).<br>
 Currently supported endpoints:
 
 ### `/items` - inventory endpoint
 
-- `GET /items` - get all items fitting the search criteria.
-  - Permission required: `USER`
-  - Possible reponse codes:
+- `GET /items` - get all items fitting the search criteria (all if none provided).
+  - Possible response codes:
       - 200 - success. Returns array of items in JSON format.
       - 401 - invalid token.
       - 403 - permission denied.
@@ -23,24 +22,21 @@ Currently supported endpoints:
       - `ignorecase=false|true` - (`true` by default)
       - if the search string is missing, all items will be returned
 - `GET /items/:id` - get item by the id provided.
-  - Permission required: `USER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 200 - success. Returns item in JSON format.
       - 401 - invalid token.
       - 403 - permission denied.
       - 404 - item not found.
       - 500 - server error.
 - `POST /items` - create a new item. Item properties are provided in the request body.
-  - Permission required: `USER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 201 - success. Returns new item in JSON format.
       - 400 - malformed input
       - 401 - invalid token.
       - 403 - permission denied.
       - 500 - server error.
 - `PUT /items/:id` - update an item. Updated item properties are provided in the request body.
-  - Permission required: `USER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 200 - success. Returns updated item in JSON format.
       - 400 - malformed input
       - 401 - invalid token.
@@ -49,8 +45,7 @@ Currently supported endpoints:
       - 500 - server error.
   - Note: this adds new properties, or replaces existing properties, but does not remove properties.
 - `PUT /items/:id/true` - replace all properties of an item. Updated item properties are provided in the request body.
-  - Permission required: `USER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 200 - success. Returns updated item in JSON format.
       - 400 - malformed input
       - 401 - invalid token.
@@ -59,8 +54,7 @@ Currently supported endpoints:
       - 500 - server error.
   - Note: this replaces all existing properties with provided properties.
 - `DELETE /items/:id` - delete an item.
-  - Permission required: `USER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 200 - success.
       - 401 - invalid token.
       - 403 - permission denied.
@@ -70,15 +64,13 @@ Currently supported endpoints:
 ### `/users` - users endpoint
 
 - `GET /users` - get all users.
-  - Permission required: `MANAGER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 200 - success. Returns array of users in JSON format.
       - 401 - invalid token.
       - 403 - permission denied.
       - 500 - server error.
 - `GET /users/:id` - get user by the id provided.
-  - Permission required: `MANAGER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 200 - success. Returns user in JSON format.
       - 401 - invalid token.
       - 403 - permission denied.
@@ -86,15 +78,14 @@ Currently supported endpoints:
       - 500 - server error.
 - `POST /users` - create a new user. User properties are provided in the request body.
   - Permission required: `MANAGER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 201 - success. Returns new user in JSON format.
       - 400 - malformed input
       - 401 - invalid token.
       - 403 - permission denied.
       - 500 - server error.
 - `PUT /users/:id` - update a user. Updated user properties are provided in the request body.
-  - Permission required: `MANAGER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 200 - success. Returns updated user in JSON format.
       - 400 - malformed input
       - 401 - invalid token.
@@ -102,8 +93,7 @@ Currently supported endpoints:
       - 404 - user not found.
       - 500 - server error.
 - `DELETE /users/:id` - delete a user.
-  - Permission required: `MANAGER`
-  - Possible reponse codes:
+  - Possible response codes:
       - 200 - success.
       - 401 - invalid token.
       - 403 - permission denied.
@@ -117,6 +107,25 @@ Currently supported endpoints:
       - 404 - user not found.
       - 500 - server error.
 
+### `/admin` - administrator endpoint
+
+- `GET /admin/audit` - gets the audit log for system operations fitting the search criteria (all if none provided).
+  - Possible response codes:
+      - 200 - success.
+      - 403 - permission denied.
+      - 500 - server error.
+- `GET /admin/permission` - gets permissions fitting the search criteria (all if none provided).
+  - Possible response codes:
+      - 200 - success.
+      - 403 - permission denied.
+      - 500 - server error.
+- `POST /admin/permission` - creates a new permission, or updates an existing one. Updated permission properties are provided in the request body.
+  - Possible response codes:
+      - 201 - success.
+      - 401 - incorrect entity, action or permission level
+      - 403 - permission denied.
+      - 500 - server error.
+
 ### `/health` - service statistics endpoint
 
 - `GET /health` - gets the current status of the service, along with service statistics.
@@ -124,6 +133,24 @@ Currently supported endpoints:
   - Possible response codes:
       - 200 - success.
       - 500 - server error.
+
+### Permissions required
+
+A permission is a 3-tuple of {element, action, permission level required}.
+
+Currently, there system recognizes:
+- 4 types of elements (item, user, permission, log)
+- 4 types of actions (create, read, update, delete)
+- 3 types of permission levels (user, manager, admin)
+
+The default permission matrix is:
+
+|                | CREATE | READ    | UPDATE | DELETE  |
+|----------------|--------|---------|--------|---------|
+| **ITEM**       | USER   | USER    | USER   | USER    |
+| **USER**       | ADMIN  | MANAGER | ADMIN  | ADMIN   |
+| **PERMISSION** | ADMIN  | ADMIN   | ADMIN  | N/A     |
+| **LOG**        | N/A    | MANAGER | MANGER | MANAGER |
 
 ### Authorization
 
@@ -181,6 +208,19 @@ $ cd alpha-dev
 $ #if you want to build the dev branch, run git checkout dev
 $ npm i
 ```
+
+### Bootstraping the database
+
+To fill the database with at least one admin-level user, and basic service permissions, run the bootstrap script from the scripts folder.
+**Verify that your database is up and running before you run this!**
+
+```console
+$ node --harmony scripts/bootstrap
+```
+
+After running it, verify that your `users` and `permissions` collections are full.
+
+**Tip**: you can run the script with `NODE_ENV=staging` or `NODE_ENV=production` to load the diffrent databases but **make sure you know what you're doing as this operation is irreversible!**.
 
 ## Running the service
 

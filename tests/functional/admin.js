@@ -22,9 +22,9 @@ before((done) => {
 
 describe('Admin functional tests', () => {
   let newPermission = {
-    element: 'ITEM',
+    element: 'PERMISSION',
     action: 'UPDATE',
-    permissionRequired: 'MANAGER'
+    permissionRequired: 'ADMIN'
   };
 
   it('should Create a new permission', (done) => {
@@ -57,7 +57,7 @@ describe('Admin functional tests', () => {
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .send(permission)
       .expect('Content-Type', /json/)
-      .expect(500)
+      .expect(401)
       .end((err, res) => {
         debug(res.body);
         should.not.exist(err);
@@ -82,14 +82,13 @@ describe('Admin functional tests', () => {
         res.body.error.should.be.false;
         res.body.should.have.property('data');
         res.body.data.should.be.an.instanceOf(Array);
-        res.body.data.filter(permission => JSON.stringify(permission) === JSON.stringify(newPermission)).should.have.lengthOf(1);
         return done();
       });
   });
 
   it('should Retrieve one permission', (done) => {
     request(process.env.TEST_URL)
-      .get('/admin/permission?element=ITEM')
+      .get('/admin/permission?element=PERMISSION')
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
@@ -100,9 +99,31 @@ describe('Admin functional tests', () => {
         res.body.error.should.be.false;
         res.body.should.have.property('data');
         res.body.data.should.be.an.instanceOf(Array);
-        res.body.data.filter(permission => JSON.stringify(permission) === JSON.stringify(newPermission)).should.have.lengthOf(1);
+        res.body.data.filter(permission => permission.element === newPermission.element && permission.action === newPermission.action).should.have.lengthOf(1);
         return done();
       });
+  });
+
+  it('should fail user with insufficient permission level', (done) => {
+    //create a test user with low permissions
+    helpers.createTestUser('USER', (error, user) => {
+      //attempt to use this user to change a permission - requires ADMIN level
+      request(process.env.TEST_URL)
+        .post('/admin/permission')
+        .set('X-API-Authorization', helpers.generateAuthorizationHeader(user))
+        .send(newPermission)
+        .expect('Content-Type', /json/)
+        .expect(403)
+        .end((err, res) => {
+          debug(res.body);
+          should.not.exist(err);
+          res.body.should.have.property('error');
+          res.body.error.should.be.true;
+          res.body.should.have.property('data');
+          res.body.data.should.equal('permission denied');
+          helpers.deleteTestUser(user.email, done);
+        });
+    });
   });
 });
 

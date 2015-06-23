@@ -114,12 +114,12 @@ Currently supported endpoints:
       - 200 - success.
       - 403 - permission denied.
       - 500 - server error.
-- `GET /admin/permission` - gets permissions fitting the search criteria (all if none provided).
+- `GET /admin/permissions` - gets permissions fitting the search criteria (all if none provided).
   - Possible response codes:
       - 200 - success.
       - 403 - permission denied.
       - 500 - server error.
-- `POST /admin/permission` - creates a new permission, or updates an existing one. Updated permission properties are provided in the request body.
+- `POST /admin/permissions` - creates a new permission, or updates an existing one. Updated permission properties are provided in the request body.
   - Possible response codes:
       - 201 - success.
       - 401 - incorrect entity, action or permission level

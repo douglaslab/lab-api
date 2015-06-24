@@ -61,7 +61,7 @@ var ModelHelper = function() {
   this.log = function(user, entity, action, comment) {
     //ignore users created during tests, of form TEST123456789
     if(!user || user.search(/TEST\d{9}/) !== -1) {
-      debug('unit test in progress - skipping log', entity, action, comment);
+      debug('unit test in progress - skipping log', entity, action, comment || '');
     }
     else {
       var entry = new AuditModel({

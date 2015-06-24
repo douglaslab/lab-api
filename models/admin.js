@@ -63,7 +63,7 @@ var AdminModel = function() {
       else {
         if(result) {
           res.json(200, {error: false, data: result.map(item => item.toObject())});
-          helper.log(req.user.email, ELEMENT, 'get', util.format('%s', req.params));
+          helper.log(req.user, ELEMENT, 'READ');
         }
       }
       return next();
@@ -81,14 +81,17 @@ var AdminModel = function() {
       permissionRequired: req.body.permissionRequired
     };
     PermissionModel.findOne(search, (err, result) => {
+      var action = '';
       if(err) {
         helper.handleError(500, err, res);
         return next();
       }
       else if(result) {
+        action = 'UPDATE';
         result.permissionRequired = update.permissionRequired;
       }
       else {
+        action = 'CREATE';
         result = new PermissionModel(update);
       }
       result.save((err2, result2) => {
@@ -99,7 +102,7 @@ var AdminModel = function() {
           debug(result2);
           if(result2) {
             res.json(201, {error: false, data: result2.toObject()});
-            helper.log(req.user.email, ELEMENT, 'add', util.format('%s %s %s', result2.element, result2.action, result2.permissionRequired));
+            helper.log(req.user, ELEMENT, action, util.format('%s %s %s', result2.element, result2.action, result2.permissionRequired));
           }
         }
         return next();

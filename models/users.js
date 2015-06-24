@@ -208,7 +208,7 @@ var UsersModel = function() {
       }
       else {
         res.json(201, {error: false, data: user.toObject()});
-        helper.log(req.user, ELEMENT, 'create', user.email);
+        helper.log(req.user, ELEMENT, 'CREATE', user.email);
       }
       return next();
     });
@@ -236,7 +236,7 @@ var UsersModel = function() {
       else {
         if(updatedUser) {
           res.json(200, {error: false, data: updatedUser.toObject()});
-          helper.log(req.user, ELEMENT, 'update', updatedUser.email);
+          helper.log(req.user, ELEMENT, 'UPDATE', updatedUser.email);
         }
         else {
           helper.handleError(404, util.format('User: %s not found', req.params.email), res);
@@ -261,7 +261,7 @@ var UsersModel = function() {
       else {
         if(user) {
           res.json(200, {error: false, data: util.format('user %s deleted successfully', user.email)});
-          helper.log(req.user, ELEMENT, 'update', user.email);
+          helper.log(req.user, ELEMENT, 'DELETE', user.email);
         }
         else {
           helper.handleError(404, util.format('User: %s not found', req.params.email), res);

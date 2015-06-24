@@ -123,7 +123,7 @@ var ItemsModel = function() {
       else {
         res.json(201, {error: false, data: item.toObject()});
       }
-      helper.log(req.user, ELEMENT, 'create', item.id);
+      helper.log(req.user, ELEMENT, 'CREATE', item.id);
       return next();
     });
   };
@@ -172,7 +172,7 @@ var ItemsModel = function() {
             }
             else {
               res.json(200, {error: false, data: newItem.toObject()});
-              helper.log(req.user, ELEMENT, 'update', id);
+              helper.log(req.user, ELEMENT, 'UPDATE', id);
             }
             return next();
           });
@@ -207,7 +207,7 @@ var ItemsModel = function() {
         if(item) {
           debug(item);
           res.json(200, {error: false, data: util.format('Item %s deleted successfully', item.id)});
-          helper.log(req.user, ELEMENT, 'delete', item.id);
+          helper.log(req.user, ELEMENT, 'DELETE', item.id);
         }
         else {
           helper.handleError(404, util.format('Item: %s not found', req.params.id), res);

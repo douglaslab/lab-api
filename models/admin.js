@@ -52,6 +52,13 @@ var AdminModel = function() {
     });
   };
 
+  /**
+   * Get access permissions
+   * @memberof AdminModel
+   * @param  {Object}   req  Request object - query contains search criteria
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
   this.getPermissions = function(req, res, next) {
     var search = {};
     Object.keys(req.query).forEach(param => search[param] = req.query[param]);
@@ -70,6 +77,12 @@ var AdminModel = function() {
     });
   };
 
+  /**
+   * Create access permission, or updates one if it already exists
+   * @memberof AdminModel
+   * @param  {Object}   req  Request object - body contains {element, action, permission required}
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation */
   this.createPermission = function(req, res, next) {
     var search = {
       element: req.body.element,

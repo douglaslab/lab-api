@@ -2,11 +2,12 @@
 
 var debug = require('debug')('server');
 var restify = require('restify');
-var config = require('./configs');
+var db = require('./configs/db');
+var service = require('./configs/service');
 var mongoose = require('mongoose');
 var server = restify.createServer({
-  name: config.service.name,
-  version: config.service.version
+  name: service.name,
+  version: service.version
 });
 
 //Allow cross origins access
@@ -26,14 +27,14 @@ server.use(restify.acceptParser(server.acceptable))
   .pre(restify.pre.sanitizePath());
 
 //database connection
-mongoose.connect(config.db.connection);
+mongoose.connect(db.connection);
 mongoose.connection.on('error', (err) => {
   console.error('connection error:', err.message);
   require('./routes/global')(server, false);
 });
 
 mongoose.connection.on('open', () => {
-  debug('Connected to %s db: %s:%s', config.db.name, mongoose.connections[0].host, mongoose.connections[0].port);
+  console.log('Connected to %s db: %s:%s', db.name, mongoose.connections[0].host, mongoose.connections[0].port);
   //only add routes if db is connected
   require('./routes/global')(server, true);
   require('./routes/items')(server);
@@ -43,7 +44,7 @@ mongoose.connection.on('open', () => {
 
 
 server.listen(process.env.PORT || 3000, () => {
-  debug('%s listening at %s', server.name, server.url.replace('[::]', 'localhost'));
+  console.log('%s listening at %s', server.name, server.url.replace('[::]', 'localhost'));
 });
 
 module.exports = server;

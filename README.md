@@ -1,4 +1,7 @@
 # DLIMS
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/douglaslab/alpha)
+
 A RESTful API for Douglas Lab Inventory Management System.<br>
 Developers: jump to [installation instructions](#installation).
 

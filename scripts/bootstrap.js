@@ -4,9 +4,10 @@
 var async = require('async');
 
 var connectDB = function(callback) {
-  var config = require('../configs');
+  var db = require('../configs/db');
   var mongoose = require('mongoose');
-  mongoose.connect(config.db.connection);
+
+  mongoose.connect(db.connection);
   mongoose.connection.on('open', callback);
   mongoose.connection.on('error', (err) => {
     console.error('connection error:', err.message);
@@ -17,10 +18,10 @@ var createDefaultAdminUser = function(callback) {
   var UserModel = require('../models/schemas/user');
   var security = require('../models/security');
   var user = {
-    email: 'test@ucsf.edu',
-    name: 'Test User',
-    school: 'ucsf',
-    password: security.hashPassword('password'),
+    email: process.env.ADMIN_USER || 'test@ucsf.edu',
+    name: 'System Admin',
+    school: '',
+    password: security.hashPassword(process.env.ADMIN_PASSWORD || 'password'),
     apiKey: security.generateRandomBytes(32),
     apiSecret: security.generateRandomBytes(32),
     permissionLevel: 'ADMIN'

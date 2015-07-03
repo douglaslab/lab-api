@@ -1,0 +1,24 @@
+{
+  "name": "DLIMS API",
+  "description": "Douglas Labs Inventory Management Service",
+  "keywords": ["DouglasLabs", "inventory", "management", "service", "api"],
+  "logo": "http://i.imgur.com/aP7zBCa.png",
+  "repository": "https://github.com/douglaslab/alpha",
+  "env": {
+    "DB_CONNECTION": {
+      "description": "MongoDB connection url (mongo://user:password@database_url)",
+      "required": true
+    },
+    "ADMIN_USER": {
+      "description": "Email address of system admin user",
+      "required": true
+    },
+    "ADMIN_PASSWORD": {
+      "description": "Password of system admin user",
+      "required": true
+    }
+  },
+  "addons": [
+    "papertrail:choklad"
+  ]
+}

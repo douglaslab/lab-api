@@ -10,6 +10,3 @@ module.exports = (function() {
   }
   return db;
 }());
-
-
-//"mongodb://bioadmin:TVrbzfpbk60W7vctR3FC@ds034878.mongolab.com:34878/bionano"

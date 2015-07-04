@@ -1,8 +1,8 @@
-# DLIMS
+# Douglas Lab API
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/douglaslab/lab-api)
 
-A RESTful API for Douglas Lab Inventory Management System.<br>
+A RESTful API for Douglas Lab Information Management System.<br>
 Developers: jump to [installation instructions](#installation).
 
 ## The API

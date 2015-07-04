@@ -1,6 +1,6 @@
 # DLIMS
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/douglaslab/alpha)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/douglaslab/lab-api)
 
 A RESTful API for Douglas Lab Inventory Management System.<br>
 Developers: jump to [installation instructions](#installation).
@@ -206,8 +206,8 @@ Instruction on how to start using MongoDB can be found [here](http://docs.mongod
 1. Fork the repo to your GitHub account
 1. Clone the repo to your machine, and install the required modules :
 ```console
-$ git clone git@github.com:<your github user name>/alpha.git
-$ cd alpha
+$ git clone git@github.com:<your github user name>/lab-api.git
+$ cd lab-api
 $ #if you want to build the dev branch, run git checkout dev
 $ npm i
 ```

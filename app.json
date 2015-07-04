@@ -2,8 +2,8 @@
   "name": "lab-api",
   "description": "Douglas Lab API",
   "keywords": ["DouglasLab", "laboratory", "information", "management", "service", "api"],
-  "logo": "http://i.imgur.com/ZO9IJx0.png",
-  "repository": "https://github.com/douglaslab/alpha",
+  "logo": "http://i.imgur.com/FTEEHab.png",
+  "repository": "https://github.com/douglaslab/lab-api",
   "env": {
     "DB_CONNECTION": {
       "description": "MongoDB connection url (mongo://user:password@database_url)",

@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/douglaslab/alpha.git"
+    "url": "git+https://github.com/douglaslab/lab-api.git"
   },
   "keywords": [
     "inventory",
@@ -25,9 +25,9 @@
   "author": "Guy Vider",
   "license": "BSD-3-Clause",
   "bugs": {
-    "url": "https://github.com/douglaslab/alpha/issues"
+    "url": "https://github.com/douglaslab/lab-api/issues"
   },
-  "homepage": "https://github.com/douglaslab/alpha#readme",
+  "homepage": "https://github.com/douglaslab/lab-api#readme",
   "dependencies": {
     "async": "^1.3.0",
     "bcrypt": "^0.8.3",

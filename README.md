@@ -1,8 +1,8 @@
-# DLIMS
+# Douglas Lab API
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/douglaslab/alpha)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/douglaslab/lab-api)
 
-A RESTful API for Douglas Lab Inventory Management System.<br>
+A RESTful API for Douglas Lab Information Management System.<br>
 Developers: jump to [installation instructions](#installation).
 
 ## The API
@@ -175,7 +175,7 @@ var header = {'X-API-Authorization': util.format('key=%s, token=%s, ts=%s', apiK
 
 ### Authentication
 
-To log in to the system, the client needs to provide the user's email and password in the `Authrization` header.
+To log in to the system, the client needs to provide the user's email and password in the `Authorization` header.
 The following code shows how to construct the header:
 
 ```node
@@ -186,7 +186,7 @@ var header = {'Authorization': util.format('Basic %s', hash)};
 
 ## Installation
 
-### Pre-requisits
+### Pre-requisites
 
 The following need to be installed on your dev machine, in order to develop/test DLIMS.
 You can either install them directly from their sites, or using a package manager like [brew](http://brew.sh/) for Mac, or [chocolatey](https://chocolatey.org/) for Windows.
@@ -206,8 +206,8 @@ Instruction on how to start using MongoDB can be found [here](http://docs.mongod
 1. Fork the repo to your GitHub account
 1. Clone the repo to your machine, and install the required modules :
 ```console
-$ git clone git@github.com:<your github user name>/alpha-dev.git
-$ cd alpha-dev
+$ git clone git@github.com:<your github user name>/lab-api.git
+$ cd lab-api
 $ #if you want to build the dev branch, run git checkout dev
 $ npm i
 ```

@@ -1,20 +1,20 @@
 {
-  "name": "DLIMS API",
-  "description": "Douglas Labs Inventory Management Service",
-  "keywords": ["DouglasLabs", "inventory", "management", "service", "api"],
-  "logo": "http://i.imgur.com/aP7zBCa.png",
-  "repository": "https://github.com/douglaslab/alpha",
+  "name": "lab-api",
+  "description": "Douglas Lab API",
+  "keywords": ["DouglasLab", "laboratory", "information", "management", "service", "api"],
+  "logo": "http://i.imgur.com/FTEEHab.png",
+  "repository": "https://github.com/douglaslab/lab-api",
   "env": {
     "DB_CONNECTION": {
       "description": "MongoDB connection url (mongo://user:password@database_url)",
       "required": true
     },
-    "ADMIN_USER": {
-      "description": "Email address of system admin user",
+    "ADMIN_EMAIL": {
+      "description": "Email address for new lab-api admin account",
       "required": true
     },
     "ADMIN_PASSWORD": {
-      "description": "Password of system admin user",
+      "description": "Password for new lab-api admin account",
       "required": true
     }
   },

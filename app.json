@@ -9,12 +9,12 @@
       "description": "MongoDB connection url (mongo://user:password@database_url)",
       "required": true
     },
-    "ADMIN_USER": {
-      "description": "Email address of system admin user",
+    "ADMIN_EMAIL": {
+      "description": "Email address for new lab-api admin account",
       "required": true
     },
     "ADMIN_PASSWORD": {
-      "description": "Password of system admin user",
+      "description": "Password for new lab-api admin account",
       "required": true
     }
   },

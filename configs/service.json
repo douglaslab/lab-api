@@ -1,6 +1,6 @@
 {
   "port": 3000,
-  "name": "DouglasLab Inventory Management Service",
+  "name": "Douglas Lab API",
   "version": "1.0.0",
   "apiAuthHeader": "X-API-Authorization",
   "entities": {

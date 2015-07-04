@@ -206,8 +206,8 @@ Instruction on how to start using MongoDB can be found [here](http://docs.mongod
 1. Fork the repo to your GitHub account
 1. Clone the repo to your machine, and install the required modules :
 ```console
-$ git clone git@github.com:<your github user name>/alpha-dev.git
-$ cd alpha-dev
+$ git clone git@github.com:<your github user name>/alpha.git
+$ cd alpha
 $ #if you want to build the dev branch, run git checkout dev
 $ npm i
 ```

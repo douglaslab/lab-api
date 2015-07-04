@@ -175,7 +175,7 @@ var header = {'X-API-Authorization': util.format('key=%s, token=%s, ts=%s', apiK
 
 ### Authentication
 
-To log in to the system, the client needs to provide the user's email and password in the `Authrization` header.
+To log in to the system, the client needs to provide the user's email and password in the `Authorization` header.
 The following code shows how to construct the header:
 
 ```node
@@ -186,7 +186,7 @@ var header = {'Authorization': util.format('Basic %s', hash)};
 
 ## Installation
 
-### Pre-requisits
+### Pre-requisites
 
 The following need to be installed on your dev machine, in order to develop/test DLIMS.
 You can either install them directly from their sites, or using a package manager like [brew](http://brew.sh/) for Mac, or [chocolatey](https://chocolatey.org/) for Windows.

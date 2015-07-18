@@ -29,7 +29,7 @@ describe('Admin functional tests', () => {
 
   it('should Create a new permission', (done) => {
     request(process.env.TEST_URL)
-      .post('/admin/permission')
+      .post('/admin/permissions')
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .send(newPermission)
       .expect('Content-Type', /json/)
@@ -53,7 +53,7 @@ describe('Admin functional tests', () => {
       permissionRequired: 'MANAGER'
     };
     request(process.env.TEST_URL)
-      .post('/admin/permission')
+      .post('/admin/permissions')
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .send(permission)
       .expect('Content-Type', /json/)
@@ -71,7 +71,7 @@ describe('Admin functional tests', () => {
 
   it('should Retrieve all permissions', (done) => {
     request(process.env.TEST_URL)
-      .get('/admin/permission')
+      .get('/admin/permissions')
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
@@ -88,7 +88,7 @@ describe('Admin functional tests', () => {
 
   it('should Retrieve one permission', (done) => {
     request(process.env.TEST_URL)
-      .get('/admin/permission?element=PERMISSION')
+      .get('/admin/permissions?element=PERMISSION')
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
@@ -109,7 +109,7 @@ describe('Admin functional tests', () => {
     helpers.createTestUser('USER', (error, user) => {
       //attempt to use this user to change a permission - requires ADMIN level
       request(process.env.TEST_URL)
-        .post('/admin/permission')
+        .post('/admin/permissions')
         .set('X-API-Authorization', helpers.generateAuthorizationHeader(user))
         .send(newPermission)
         .expect('Content-Type', /json/)

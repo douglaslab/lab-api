@@ -4,10 +4,12 @@ var debug = require('debug')('test:unit:items');
 var should = require('should');
 var httpMocks = require('node-mocks-http');
 var items = require('../../models/items');
+var helper = require('../../models/modelHelper');
 
 describe('Items unit tests', () => {
   should;
   var id = null;
+  var userId = helper.getObjectId('55ac794b87b86fa0338f3724');
   var newItem = {
     name: 'balance',
     units: 'metric',
@@ -16,6 +18,8 @@ describe('Items unit tests', () => {
 
   it('should Create a new item', (done) => {
     let req = httpMocks.createRequest({body: newItem});
+    req.userId = userId;  //for createdBy
+    debug(req);
     let res = httpMocks.createResponse();
     items.create(req, res, () => {
       let result = JSON.parse(res._getData());
@@ -88,7 +92,7 @@ describe('Items unit tests', () => {
   });
 
   it('should Retrieve all items', (done) => {
-    let req = httpMocks.createRequest({params: {id: 'blahblah'}});
+    let req = httpMocks.createRequest();
     let res = httpMocks.createResponse();
     items.findAll(req, res, () => {
       let result = JSON.parse(res._getData());
@@ -109,6 +113,7 @@ describe('Items unit tests', () => {
       params: {id: id},
       body: newItem
     });
+    req.userId = userId;  //for modifiedBy
     let res = httpMocks.createResponse();
     items.update(req, res, () => {
       let result = JSON.parse(res._getData());
@@ -137,6 +142,7 @@ describe('Items unit tests', () => {
       },
       body: item
     });
+    req.userId = userId;  //for modifiedBy
     let res = httpMocks.createResponse();
     items.update(req, res, () => {
       let result = JSON.parse(res._getData());

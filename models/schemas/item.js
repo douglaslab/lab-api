@@ -6,8 +6,10 @@ var Schema = mongoose.Schema;
 var ItemSchema = new Schema({
     version: {type: String, default: '1.0.0'},
     properties: Schema.Types.Mixed,
-    created: {type: Date, default: Date.now, select: false},
-    modified: {type: Date, default: Date.now, select: false}
+    created: {type: Date, default: Date.now},
+    createdBy: {type: Schema.Types.ObjectId, ref: 'User'},
+    modified: {type: Date, default: Date.now},
+    modifiedBy: {type: Schema.Types.ObjectId, ref: 'User'}
   }, {
   toObject: {
     transform: (doc, ret) => {

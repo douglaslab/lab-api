@@ -9,6 +9,7 @@ var server = restify.createServer({
   name: service.name,
   version: service.version
 });
+debug(service);
 
 //Allow cross origins access
 server.use((req, res, next) => {

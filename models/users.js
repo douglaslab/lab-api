@@ -118,6 +118,8 @@ var UsersModel = function() {
                     debug(user.permissionLevel, requiredPermissionLevel);
                     if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
                       req.user = user.name;
+                      req.userId = helper.getObjectId(user._id);
+                      debug(req.user, req.userId);
                       return next();
                     }
                     else {

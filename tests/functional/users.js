@@ -121,7 +121,83 @@ describe('Users functional tests', () => {
       });
   });
 
-  it('should Delete the created delete', (done) => {
+  let newService = {
+    serviceName: 'Dropbox',
+    token: 'mytoken',
+    additional: 'additional info'
+  };
+
+  it('should create a cloud service for user', (done) => {
+    request(process.env.TEST_URL)
+      .post('/users/service/' + newUser.email)
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
+      .send(newService)
+      .expect('Content-Type', /json/)
+      .expect(201)
+      .end((err, res) => {
+        debug(res.body);
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        return done();
+      });
+  });
+
+  it('should retrieve cloud service from user', (done) => {
+    request(process.env.TEST_URL)
+      .get('/users/service/' + newUser.email + '?serviceName=' + newService.serviceName)
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        debug(res.body);
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        res.body.data.should.be.an.instanceOf(Array);
+        res.body.data.length.should.equal(1);
+        res.body.data[0].serviceName.should.equal(newService.serviceName);
+        res.body.data[0].token.should.equal(newService.token);
+        return done();
+      });
+  });
+
+  it('should retrieve all cloud services from user', (done) => {
+    request(process.env.TEST_URL)
+      .get('/users/service/' + newUser.email)
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        debug(res.body);
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        res.body.data.should.be.an.instanceOf(Array);
+        return done();
+      });
+  });
+
+  it('should delete the cloud service from user', (done) => {
+    request(process.env.TEST_URL)
+      .del('/users/service/' + newUser.email + '?serviceName=' + newService.serviceName)
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        debug(res.body);
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        return done();
+      });
+  });
+
+
+  it('should Delete the created user', (done) => {
     request(process.env.TEST_URL)
       .del('/users/' + newUser.email)
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))

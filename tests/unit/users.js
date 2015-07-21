@@ -105,7 +105,74 @@ describe('Users unit tests', () => {
     });
   });
 
-  it('should Delete the created delete', (done) => {
+  let newService = {
+    serviceName: 'Dropbox',
+    token: 'mytoken',
+    additional: 'additional info'
+  };
+
+  it('should create a cloud service for user', (done) => {
+    let req = httpMocks.createRequest({params: {email: newUser.email}, body: newService});
+    let res = httpMocks.createResponse();
+    users.createService(req, res, () => {
+      let result = JSON.parse(res._getData());
+      debug(result);
+      res.statusCode.should.equal(201);
+      result.should.have.property('error');
+      result.error.should.be.false;
+      result.should.have.property('data');
+      return done();
+    });
+  });
+
+  it('should retrieve cloud service from user', (done) => {
+    let req = httpMocks.createRequest({params: {email: newUser.email}, query: {serviceName: newService.serviceName}});
+    let res = httpMocks.createResponse();
+    users.getService(req, res, () => {
+      let result = JSON.parse(res._getData());
+      debug(result);
+      res.statusCode.should.equal(200);
+      result.should.have.property('error');
+      result.error.should.be.false;
+      result.should.have.property('data');
+      result.data.should.be.an.instanceOf(Array);
+      result.data.length.should.equal(1);
+      result.data[0].serviceName.should.equal(newService.serviceName);
+      result.data[0].token.should.equal(newService.token);
+      return done();
+    });
+  });
+
+  it('should retrieve all cloud services from user', (done) => {
+    let req = httpMocks.createRequest({params: {email: newUser.email}});
+    let res = httpMocks.createResponse();
+    users.getService(req, res, () => {
+      let result = JSON.parse(res._getData());
+      debug(result);
+      res.statusCode.should.equal(200);
+      result.should.have.property('error');
+      result.error.should.be.false;
+      result.should.have.property('data');
+      result.data.should.be.an.instanceOf(Array);
+      return done();
+    });
+  });
+
+  it('should delete the cloud service from user', (done) => {
+    let req = httpMocks.createRequest({params: {email: newUser.email}, query: {serviceName: newService.serviceName}});
+    let res = httpMocks.createResponse();
+    users.deleteService(req, res, () => {
+      let result = JSON.parse(res._getData());
+      debug(result);
+      res.statusCode.should.equal(200);
+      result.should.have.property('error');
+      result.error.should.be.false;
+      result.should.have.property('data');
+      return done();
+    });
+  });
+
+  it('should Delete the created user', (done) => {
     let req = httpMocks.createRequest({params: {email: newUser.email}});
     let res = httpMocks.createResponse();
     users.delete(req, res, () => {

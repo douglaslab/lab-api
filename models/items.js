@@ -116,7 +116,7 @@ var ItemsModel = function() {
       return next();
     }
     var newItem = new ItemModel({properties: req.body, createdBy: req.userId});
-    debug('creator %s, item %s',req.userId, newItem);
+    debug('creator %s, item %s', req.user && req.user.id, newItem);
     newItem.save((err, item) => {
       if(err) {
         helper.handleError(500, err, res);
@@ -144,7 +144,8 @@ var ItemsModel = function() {
       return next();
     }
     //verify id is legal
-    var id = helper.getObjectId(req.params.id);
+    let userId = req.user ? req.user.id : null;
+    let id = helper.getObjectId(req.params.id);
     if(id === null) {
       helper.handleError(400, 'illegal item id', res);
       return next();
@@ -157,17 +158,17 @@ var ItemsModel = function() {
       else {
         if(item) {
           item.modified = Date.now();
-          debug('modifier',req.userId);
+          debug('modifier', userId);
           if(req.params.replace) {
             item.properties = req.body;
-            item.createdBy = req.userId;
+            item.createdBy = userId;
           }
           else {
             for(let field of Object.keys(req.body)) {
               item.properties[field] = req.body[field];
             }
           }
-          item.modifiedBy = req.userId;
+          item.modifiedBy = userId;
           debug(item);
           item.markModified('properties');
           item.save((err2, newItem) => {

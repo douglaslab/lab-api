@@ -115,7 +115,8 @@ var ItemsModel = function() {
       helper.handleError(400, 'malformed input', res);
       return next();
     }
-    var newItem = new ItemModel({properties: req.body});
+    var newItem = new ItemModel({properties: req.body, createdBy: req.userId});
+    debug('creator %s, item %s',req.userId, newItem);
     newItem.save((err, item) => {
       if(err) {
         helper.handleError(500, err, res);
@@ -155,16 +156,19 @@ var ItemsModel = function() {
       }
       else {
         if(item) {
-          debug(item);
           item.modified = Date.now();
+          debug('modifier',req.userId);
           if(req.params.replace) {
             item.properties = req.body;
+            item.createdBy = req.userId;
           }
           else {
             for(let field of Object.keys(req.body)) {
               item.properties[field] = req.body[field];
             }
           }
+          item.modifiedBy = req.userId;
+          debug(item);
           item.markModified('properties');
           item.save((err2, newItem) => {
             if(err2) {

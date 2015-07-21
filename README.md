@@ -72,7 +72,7 @@ Currently supported endpoints:
       - 401 - invalid token.
       - 403 - permission denied.
       - 500 - server error.
-- `GET /users/:id` - get user by the id provided.
+- `GET /users/:email` - get user by the email provided.
   - Possible response codes:
       - 200 - success. Returns user in JSON format.
       - 401 - invalid token.
@@ -87,7 +87,7 @@ Currently supported endpoints:
       - 401 - invalid token.
       - 403 - permission denied.
       - 500 - server error.
-- `PUT /users/:id` - update a user. Updated user properties are provided in the request body.
+- `PUT /users/:email` - update a user. Updated user properties are provided in the request body.
   - Possible response codes:
       - 200 - success. Returns updated user in JSON format.
       - 400 - malformed input
@@ -95,7 +95,7 @@ Currently supported endpoints:
       - 403 - permission denied.
       - 404 - user not found.
       - 500 - server error.
-- `DELETE /users/:id` - delete a user.
+- `DELETE /users/:email` - delete a user.
   - Possible response codes:
       - 200 - success.
       - 401 - invalid token.
@@ -106,7 +106,37 @@ Currently supported endpoints:
   - Permission required: **none**
   - Possible response codes:
       - 200 - success.
-      - 401 - incorrect email or password
+      - 401 - incorrect email or password.
+      - 404 - user not found.
+      - 500 - server error.
+
+### `/users/service` - users cloud service endpoint
+
+- `GET /users/service/:email?serviceName=xxx` - retrieves service properties, or all services for empty name.
+  - Permission required: `MANAGER`
+  - Possible response codes:
+      - 200 - success. Returns array of services (always an array).
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - user not found.
+      - 404 - specified service not found (if no service provided, return 200 and empty array).
+      - 500 - server error.
+- `POST /users/service/:email` - create a new service. Service properties are provided in the request body.
+  - Permission required: `MANAGER`
+  - Possible response codes:
+      - 201 - success.
+      - 400 - missing serviceName.
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - user not found.
+      - 500 - server error.
+- `DELETE /users/service/:email?serviceName=xxx` - deletes service.
+  - Permission required: `MANAGER`
+  - Possible response codes:
+      - 200 - success.
+      - 400 - missing serviceName.
+      - 401 - invalid token.
+      - 403 - permission denied.
       - 404 - user not found.
       - 500 - server error.
 

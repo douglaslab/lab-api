@@ -3,6 +3,7 @@
 var mongoose = require('mongoose');
 var permissionLevels = require('../../configs/service').entities.permissionLevels;
 var Schema = mongoose.Schema;
+var Service = require('./service');
 
 var UserSchema = new Schema({
     email: {type: String, required: true, unique: true},
@@ -13,6 +14,7 @@ var UserSchema = new Schema({
     apiKey: {type: String, required: true},
     apiSecret: {type: String, required: true},
     permissionLevel: {type: String, required: true, enum: permissionLevels, default: 'USER'},
+    services: [Service],
     created: {type: Date, default: Date.now, select: false},
     modified: {type: Date, default: Date.now, select: false}
   }, {

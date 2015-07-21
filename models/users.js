@@ -1,9 +1,9 @@
 'use strict';
 
 const ELEMENT = 'USER';
-var debug = require('debug')('users');
 var async = require('async');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
+var debug = require('debug')('users');
 var helper = require('./modelHelper');
 var config = require('../configs/service');
 
@@ -118,6 +118,8 @@ var UsersModel = function() {
                     debug(user.permissionLevel, requiredPermissionLevel);
                     if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
                       req.user = user.name;
+                      req.userId = helper.getObjectId(user._id);
+                      debug(req.user, req.userId);
                       return next();
                     }
                     else {
@@ -268,6 +270,129 @@ var UsersModel = function() {
         }
       }
       return next();
+    });
+  };
+
+  /**
+   * Get user cloud storage service ctoken
+   * @param  {Object}   req  Request object - param contains user email and query contains serviceName
+   *                                           If serviceName is empty, all services will be returned
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
+  this.getService = function(req, res, next) {
+    UserModel.findOne({email: req.params.email}, (err, user) => {
+      if(err) {
+        helper.handleError(500, err, res);
+      }
+      else {
+        if(user) {
+          let services;
+          if(req.query.serviceName) {
+            services = user.services.filter((s) => s.serviceName.toLowerCase() === req.query.serviceName.toLowerCase());
+          }
+          else {
+            services = user.services;
+          }
+          if(req.query.serviceName && services.length === 0) {
+            helper.handleError(404, util.format('service: %s not found', req.query.serviceName), res);
+          }
+          else {
+            res.json(200, {error: false, data: services.map((s) => s.toObject())});
+          }
+        }
+        else {
+          helper.handleError(404, util.format('user: %s not found', req.params.id), res);
+        }
+      }
+      return next();
+    });
+  };
+
+  /**
+   * Create user cloud storage service
+   * @param {Object}   req  Request object - param contains user email and body contains {serviceName, token, additional}
+   *                                          If serviceName already exists, then token and additional will be updated
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
+  this.createService = function(req, res, next) {
+    if(!req.body.serviceName) {
+      helper.handleError(400, 'serviceName missing', res);
+      return next();
+    }
+    UserModel.findOne({email: req.params.email}, (err, user) => {
+      if(err) {
+        helper.handleError(500, err, res);
+        return next();
+      }
+      else {
+        if(user) {
+          let exists = false;
+          user.services.forEach((s) => {
+            if(s.serviceName.toLowerCase() === req.body.serviceName.toLowerCase()) {
+              s.token = req.body.token;
+              s.additional = req.additional;
+              exists = true;
+            }
+          });
+          if(!exists) {
+            user.services.push(req.body);
+          }
+          user.save((err2) => {
+            if(err2) {
+              helper.handleError(500, err2, res);
+            }
+            else {
+              res.json(201, {error: false, data: util.format('service %s added', req.body.serviceName)});
+              helper.log(req.user, ELEMENT, 'UPDATE', util.format('service %s added for user %s', req.body.serviceName, user.email));
+            }
+            return next();
+          });
+        }
+        else {
+          helper.handleError(404, util.format('user: %s not found', req.params.id), res);
+          return next();
+        }
+      }
+    });
+  };
+
+  /**
+   * Delete user cloud storage service ctoken
+   * @param  {Object}   req  Request object - param contains user email and query contains service name
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
+  this.deleteService = function(req, res, next) {
+    if(!req.query.serviceName) {
+      helper.handleError(400, 'serviceName missing', res);
+      return next();
+    }
+    UserModel.findOne({email: req.params.email}, (err, user) => {
+      if(err) {
+        helper.handleError(500, err, res);
+        return next();
+      }
+      else {
+        if(user) {
+          user.services = user.services.filter((s) => s.serviceName.toLowerCase() !== req.query.serviceName.toLowerCase());
+          user.save((err2) => {
+            if(err2) {
+              helper.handleError(500, err2, res);
+            }
+            else {
+              res.json(200, {error: false, data: util.format('service %s deleted successfully', req.query.serviceName)});
+              helper.log(req.user, ELEMENT, 'UPDATE', util.format('service %s deleted for user %s', req.query.serviceName, user.email));
+            }
+            return next();
+          });
+        }
+        else {
+          helper.handleError(404, util.format('user: %s not found', req.params.id), res);
+          return next();
+        }
+      }
     });
   };
 };

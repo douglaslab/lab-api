@@ -107,7 +107,7 @@ var UsersModel = function() {
             });
           },
           function getUser() {
-            UserModel.findOne({apiKey: header.key}, 'name apiKey apiSecret permissionLevel', (err, user) => {
+            UserModel.findOne({apiKey: header.key}, 'email name apiKey apiSecret permissionLevel', (err, user) => {
               if(err) {
                 helper.handleError(500, err, res);
               }
@@ -116,10 +116,16 @@ var UsersModel = function() {
                   debug(user);
                   if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
                     debug(user.permissionLevel, requiredPermissionLevel);
-                    if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel)) {
-                      req.user = user.name;
-                      req.userId = helper.getObjectId(user._id);
-                      debug(req.user, req.userId);
+                    //a special paermisision case: a user trying to update itself
+                    if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel) ||
+                      (element === 'USER' && action === 'UPDATE' && user.email === req.params.email)) {
+                      req.user = {
+                        id: helper.getObjectId(user._id),
+                        name: user.name,
+                        email: user.email,
+                        permissionLevel: user.permissionLevel
+                      };
+                      debug(req.user);
                       return next();
                     }
                     else {
@@ -164,7 +170,7 @@ var UsersModel = function() {
         if(user) {
           if(security.validatePassword(password, user.password)) {
             res.json(200, {error: false, data: user.toObject()});
-            helper.log(user.email, ELEMENT, 'login');
+            helper.log(user, ELEMENT, 'login');
           }
           else {
             helper.handleError(401, 'incorrect password', res);
@@ -210,6 +216,7 @@ var UsersModel = function() {
       }
       else {
         res.json(201, {error: false, data: user.toObject()});
+        debug(req);
         helper.log(req.user, ELEMENT, 'CREATE', user.email);
       }
       return next();

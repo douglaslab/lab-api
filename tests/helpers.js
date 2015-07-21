@@ -52,6 +52,11 @@ exports.stopServer = function() {
 
 exports.createTestUser = function(permissionLevel, callback) {
   var req = httpMocks.createRequest({body: generateRandomUser(permissionLevel)});
+  req.user = {
+    id: 'testuser',
+    name: 'testuser'
+  };
+  debug(req)
   var res = httpMocks.createResponse();
   users.create(req, res, () => {
     var result = JSON.parse(res._getData());

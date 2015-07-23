@@ -18,8 +18,7 @@ describe('Items unit tests', () => {
 
   it('should Create a new item', (done) => {
     let req = httpMocks.createRequest({body: newItem});
-    req.userId = userId;  //for createdBy
-    debug(req);
+    req.user = {name: 'testuser', id: userId};  //for createdBy
     let res = httpMocks.createResponse();
     items.create(req, res, () => {
       let result = JSON.parse(res._getData());
@@ -113,7 +112,7 @@ describe('Items unit tests', () => {
       params: {id: id},
       body: newItem
     });
-    req.userId = userId;  //for modifiedBy
+    req.user = {name: 'testuser', id: userId};  //for modifiedBy
     let res = httpMocks.createResponse();
     items.update(req, res, () => {
       let result = JSON.parse(res._getData());
@@ -142,7 +141,7 @@ describe('Items unit tests', () => {
       },
       body: item
     });
-    req.userId = userId;  //for modifiedBy
+    req.user = {name: 'testuser', id: userId};  //for modifiedBy
     let res = httpMocks.createResponse();
     items.update(req, res, () => {
       let result = JSON.parse(res._getData());

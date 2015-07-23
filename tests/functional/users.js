@@ -129,7 +129,7 @@ describe('Users functional tests', () => {
 
   it('should create a cloud service for user', (done) => {
     request(process.env.TEST_URL)
-      .post('/users/service/' + newUser.email)
+      .post('/users/' + newUser.email + '/service')
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .send(newService)
       .expect('Content-Type', /json/)
@@ -146,7 +146,7 @@ describe('Users functional tests', () => {
 
   it('should retrieve cloud service from user', (done) => {
     request(process.env.TEST_URL)
-      .get('/users/service/' + newUser.email + '?serviceName=' + newService.serviceName)
+      .get('/users/' + newUser.email + '/service/' + newService.serviceName)
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
@@ -166,7 +166,7 @@ describe('Users functional tests', () => {
 
   it('should retrieve all cloud services from user', (done) => {
     request(process.env.TEST_URL)
-      .get('/users/service/' + newUser.email)
+      .get('/users/' + newUser.email + '/service')
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)
@@ -183,7 +183,7 @@ describe('Users functional tests', () => {
 
   it('should delete the cloud service from user', (done) => {
     request(process.env.TEST_URL)
-      .del('/users/service/' + newUser.email + '?serviceName=' + newService.serviceName)
+      .del('/users/' + newUser.email + '/service/' + newService.serviceName)
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .expect('Content-Type', /json/)
       .expect(200)

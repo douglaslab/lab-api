@@ -10,7 +10,8 @@ module.exports = function(server) {
   server.put('/users/:email', users.validateUser(ELEMENT, 'UPDATE'), users.update);
   server.del('/users/:email', users.validateUser(ELEMENT, 'DELETE'), users.delete);
   //cloud service routes - adding/removing service is considerd an Update operation
-  server.get('/users/service/:email', users.validateUser(ELEMENT, 'READ'), users.getService);
-  server.post('/users/service/:email', users.validateUser(ELEMENT, 'UPDATE'), users.createService);
-  server.del('/users/service/:email', users.validateUser(ELEMENT, 'UPDATE'), users.deleteService);
+  server.get('/users/:email/service', users.validateUser(ELEMENT, 'READ'), users.getService);
+  server.get('/users/:email/service/:serviceName', users.validateUser(ELEMENT, 'READ'), users.getService);
+  server.post('/users/:email/service', users.validateUser(ELEMENT, 'UPDATE'), users.createService);
+  server.del('/users/:email/service/:serviceName', users.validateUser(ELEMENT, 'UPDATE'), users.deleteService);
 };

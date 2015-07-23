@@ -126,7 +126,7 @@ describe('Users unit tests', () => {
   });
 
   it('should retrieve cloud service from user', (done) => {
-    let req = httpMocks.createRequest({params: {email: newUser.email}, query: {serviceName: newService.serviceName}});
+    let req = httpMocks.createRequest({params: {email: newUser.email, serviceName: newService.serviceName}});
     let res = httpMocks.createResponse();
     users.getService(req, res, () => {
       let result = JSON.parse(res._getData());
@@ -159,7 +159,7 @@ describe('Users unit tests', () => {
   });
 
   it('should delete the cloud service from user', (done) => {
-    let req = httpMocks.createRequest({params: {email: newUser.email}, query: {serviceName: newService.serviceName}});
+    let req = httpMocks.createRequest({params: {email: newUser.email, serviceName: newService.serviceName}});
     let res = httpMocks.createResponse();
     users.deleteService(req, res, () => {
       let result = JSON.parse(res._getData());

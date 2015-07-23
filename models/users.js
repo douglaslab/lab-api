@@ -281,8 +281,8 @@ var UsersModel = function() {
   };
 
   /**
-   * Get user cloud storage service ctoken
-   * @param  {Object}   req  Request object - param contains user email and query contains serviceName
+   * Get user cloud storage service/s
+   * @param  {Object}   req  Request object - param contains user email and serviceName
    *                                           If serviceName is empty, all services will be returned
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
@@ -295,14 +295,15 @@ var UsersModel = function() {
       else {
         if(user) {
           let services;
-          if(req.query.serviceName) {
-            services = user.services.filter((s) => s.serviceName.toLowerCase() === req.query.serviceName.toLowerCase());
+          let serviceName = req.params.serviceName;
+          if(serviceName) {
+            services = user.services.filter((s) => s.serviceName.toLowerCase() === serviceName.toLowerCase());
           }
           else {
             services = user.services;
           }
-          if(req.query.serviceName && services.length === 0) {
-            helper.handleError(404, util.format('service: %s not found', req.query.serviceName), res);
+          if(serviceName && services.length === 0) {
+            helper.handleError(404, util.format('service: %s not found', serviceName), res);
           }
           else {
             res.json(200, {error: false, data: services.map((s) => s.toObject())});
@@ -367,12 +368,12 @@ var UsersModel = function() {
 
   /**
    * Delete user cloud storage service ctoken
-   * @param  {Object}   req  Request object - param contains user email and query contains service name
+   * @param  {Object}   req  Request object - params contains user email and serviceName
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
    */
   this.deleteService = function(req, res, next) {
-    if(!req.query.serviceName) {
+    if(!req.params.serviceName) {
       helper.handleError(400, 'serviceName missing', res);
       return next();
     }
@@ -383,14 +384,14 @@ var UsersModel = function() {
       }
       else {
         if(user) {
-          user.services = user.services.filter((s) => s.serviceName.toLowerCase() !== req.query.serviceName.toLowerCase());
+          user.services = user.services.filter((s) => s.serviceName.toLowerCase() !== req.params.serviceName.toLowerCase());
           user.save((err2) => {
             if(err2) {
               helper.handleError(500, err2, res);
             }
             else {
-              res.json(200, {error: false, data: util.format('service %s deleted successfully', req.query.serviceName)});
-              helper.log(req.user, ELEMENT, 'UPDATE', util.format('service %s deleted for user %s', req.query.serviceName, user.email));
+              res.json(200, {error: false, data: util.format('service %s deleted successfully', req.params.serviceName)});
+              helper.log(req.user, ELEMENT, 'UPDATE', util.format('service %s deleted for user %s', req.params.serviceName, user.email));
             }
             return next();
           });

@@ -110,9 +110,9 @@ Currently supported endpoints:
       - 404 - user not found.
       - 500 - server error.
 
-### `/users/service` - users cloud service endpoint
+### `/users/:email/service` - user's cloud service endpoint
 
-- `GET /users/service/:email?serviceName=xxx` - retrieves service properties, or all services for empty name.
+- `GET /users/:email/service` - retrieves all services properties.
   - Permission required: `MANAGER`
   - Possible response codes:
       - 200 - success. Returns array of services (always an array).
@@ -121,7 +121,16 @@ Currently supported endpoints:
       - 404 - user not found.
       - 404 - specified service not found (if no service provided, return 200 and empty array).
       - 500 - server error.
-- `POST /users/service/:email` - create a new service. Service properties are provided in the request body.
+- `GET /users/:email/service/:serviceName` - retrieves specified service properties.
+  - Permission required: `MANAGER`
+  - Possible response codes:
+      - 200 - success. Returns array of services (always an array).
+      - 401 - invalid token.
+      - 403 - permission denied.
+      - 404 - user not found.
+      - 404 - specified service not found (if no service provided, return 200 and empty array).
+      - 500 - server error.
+- `POST /users/:email/service` - create a new service. Service properties are provided in the request body.
   - Permission required: `MANAGER`
   - Possible response codes:
       - 201 - success.
@@ -130,7 +139,7 @@ Currently supported endpoints:
       - 403 - permission denied.
       - 404 - user not found.
       - 500 - server error.
-- `DELETE /users/service/:email?serviceName=xxx` - deletes service.
+- `DELETE /users/:email/service/:serviceName` - deletes service.
   - Permission required: `MANAGER`
   - Possible response codes:
       - 200 - success.

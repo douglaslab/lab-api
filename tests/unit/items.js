@@ -141,7 +141,7 @@ describe('Items unit tests', () => {
       },
       body: item
     });
-    req.userId = userId;  //for modifiedBy
+    req.user = {name: 'testuser', id: userId};  //for modifiedBy
     let res = httpMocks.createResponse();
     items.update(req, res, () => {
       let result = JSON.parse(res._getData());

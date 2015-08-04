@@ -54,11 +54,9 @@
                         "in": "body",
                         "description": "item properties",
                         "required": false,
-                        "type": "array",
-                          "items": {
-                            "type": "integer",
-                            "format": "int64"
-                          }
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "tags": [
@@ -131,7 +129,9 @@
                         "in": "body",
                         "description": "updated item properties",
                         "required": false,
-                        "type": "string"
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "tags": [
@@ -207,7 +207,9 @@
                         "in": "body",
                         "description": "updated item properties",
                         "required": false,
-                        "type": "string"
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "tags": [
@@ -264,7 +266,9 @@
                         "in": "body",
                         "description": "user properties",
                         "required": false,
-                        "type": "string"
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "description": "Permission required - manager",
@@ -338,7 +342,9 @@
                         "in": "body",
                         "description": "updated user properties",
                         "required": false,
-                        "type": "string"
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "tags": [
@@ -487,7 +493,9 @@
                         "in": "body",
                         "description": "service properties",
                         "required": false,
-                        "type": "string"
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "description": "Permission required - manager.",
@@ -646,7 +654,9 @@
                         "in": "body",
                         "description": "updated permission properties",
                         "required": false,
-                        "type": "string"
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "tags": [

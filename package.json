@@ -30,9 +30,9 @@
   "homepage": "https://github.com/douglaslab/lab-api#readme",
   "dependencies": {
     "async": "^1.4.0",
-    "bcrypt": "^0.8.3",
+    "bcrypt": "^0.8.4",
     "debug": "^2.2.0",
-    "mongoose": "^4.0.8",
+    "mongoose": "^4.1.1",
     "readdir": "0.0.13",
     "restify": "^3.0.3"
   },

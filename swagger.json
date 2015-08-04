@@ -410,7 +410,8 @@
                         "in": "header",
                         "description": "user password",
                         "required": true,
-                        "type": "string"
+                        "type": "string",
+                        "format": "password"
                     }
                 ],
                 "description": "Permission required - none.",

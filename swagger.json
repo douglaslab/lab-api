@@ -48,6 +48,17 @@
             },
             "post": {
                 "summary": "Creates a new item. Item properties are provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "item properties",
+                        "required": false,
+                        "schema" : {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "tags": [
                     "items endpoint"
                 ],
@@ -112,6 +123,15 @@
                         "description": "item id",
                         "required": true,
                         "type": "number"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "updated item properties",
+                        "required": false,
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "tags": [
@@ -181,6 +201,15 @@
                         "description": "item id",
                         "required": true,
                         "type": "number"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "updated item properties",
+                        "required": false,
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "tags": [
@@ -231,6 +260,17 @@
             },
             "post": {
                 "summary": "Create a new user. User properties provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "user properties",
+                        "required": false,
+                        "schema" : {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "description": "Permission required - manager",
                 "tags": [
                     "users endpoint"
@@ -296,6 +336,15 @@
                         "description": "user email",
                         "required": true,
                         "type": "string"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "updated user properties",
+                        "required": false,
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "tags": [
@@ -358,6 +407,23 @@
         "/users/login": {
             "post": {
                 "summary": "Authenticate a user. Email and password are provided in the Authorization HTTP header (see Authentication). Upon successful login, will return the user object.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "header",
+                        "description": "user email",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "header",
+                        "description": "user password",
+                        "required": true,
+                        "type": "string",
+                        "format": "password"
+                    }
+                ],
                 "description": "Permission required - none.",
                 "tags": [
                     "users endpoint"
@@ -421,6 +487,15 @@
                         "description": "user email",
                         "required": true,
                         "type": "string"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "service properties",
+                        "required": false,
+                        "schema" : {
+                            "type": "string"
+                        }
                     }
                 ],
                 "description": "Permission required - manager.",
@@ -573,6 +648,17 @@
             },
             "post": {
                 "summary": "Creates a new permission, or updates an existing one. Updated permission properties are provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "updated permission properties",
+                        "required": false,
+                        "schema" : {
+                            "type": "string"
+                        }
+                    }
+                ],
                 "tags": [
                     "administrator endpoint"
                 ],

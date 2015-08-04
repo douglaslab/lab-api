@@ -48,6 +48,15 @@
             },
             "post": {
                 "summary": "Creates a new item. Item properties are provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "item properties",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
                 "tags": [
                     "items endpoint"
                 ],
@@ -112,6 +121,13 @@
                         "description": "item id",
                         "required": true,
                         "type": "number"
+                    },
+                    {
+                    "name": "properties",
+                    "in": "body",
+                    "description": "updated item properties",
+                    "required": false,
+                    "type": "string"
                     }
                 ],
                 "tags": [
@@ -181,6 +197,13 @@
                         "description": "item id",
                         "required": true,
                         "type": "number"
+                    },
+                    {
+                    "name": "properties",
+                    "in": "body",
+                    "description": "updated item properties",
+                    "required": false,
+                    "type": "string"
                     }
                 ],
                 "tags": [

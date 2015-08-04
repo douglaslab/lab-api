@@ -476,6 +476,13 @@
                         "description": "user email",
                         "required": true,
                         "type": "string"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "service properties",
+                        "required": false,
+                        "type": "string"
                     }
                 ],
                 "description": "Permission required - manager.",
@@ -628,6 +635,15 @@
             },
             "post": {
                 "summary": "Creates a new permission, or updates an existing one. Updated permission properties are provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "updated permission properties",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
                 "tags": [
                     "administrator endpoint"
                 ],

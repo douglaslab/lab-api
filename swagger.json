@@ -1,0 +1,612 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Douglas Lab API",
+        "description": "A RESTful API for Douglas Lab Information Management System.",
+        "version": "1.0.0"
+    },
+    "host": "bionano-api.herokuapp.com",
+    "schemes": [
+        "https"
+    ],
+    "produces": [
+        "application/json"
+    ],
+    "paths": {
+        "/items": {
+            "get": {
+                "summary": "Get all items fitting the search criteria (all if none provided).",
+                "parameters": [
+                    {
+                        "name": "SearchCriteria",
+                        "in": "query",
+                        "description": "<ul> <li>values are specified as a query string in the form of field1=value1&field2=value2...</li> <li>operator=or|and - (and by default)</li> <li>ignorecase=false|true - (true by default)</li> <li>if the search string is missing, all items will be returned</li> </ul>",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "items endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success. Returns an array of items in JSON format."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "Item not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            },
+            "post": {
+                "summary": "Creates a new item. Item properties are provided in the request body.",
+                "tags": [
+                    "items endpoint"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success. Returns new item in JSON format."
+                    },
+                    "400": {
+                        "description": "Malformed input."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/items/{id}": {
+            "get": {
+                "summary": "Get items by the id provided.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "item id",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "tags": [
+                    "items endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success. Returns item in JSON format."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "Item not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update an item. Updated item properties are provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "item id",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "tags": [
+                    "items endpoint"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success. Returns new item in JSON format."
+                    },
+                    "400": {
+                        "description": "Malformed input."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "Item not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete an item.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "item id",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "tags": [
+                    "items endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "Item not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/items/{id}/true": {
+            "put": {
+                "summary": "Replaces all provided properties of an item. Updated item properties are provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "item id",
+                        "required": true,
+                        "type": "number"
+                    }
+                ],
+                "tags": [
+                    "items endpoint"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Success. Returns new item in JSON format."
+                    },
+                    "400": {
+                        "description": "Malformed input."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "Item not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/users": {
+            "get": {
+                "summary": "Get all users.",
+                "tags": [
+                    "users endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success. Returns array of users in JSON format."
+                    },
+                    "400": {
+                        "description": "Malformed input."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new user. User properties provided in the request body.",
+                "description": "Permission required - manager",
+                "tags": [
+                    "users endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success. Returns new user in JSON format."
+                    },
+                    "400": {
+                        "description": "Malformed input."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/users/{email}": {
+            "get": {
+                "summary": "Get user by the email provided.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "user email",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "users endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success. Returns user in JSON format.."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            },
+            "put": {
+                "summary": "Update a user. Updated user properties are provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "user email",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "users endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success. Returns updated user in JSON format."
+                    },
+                    "400": {
+                        "description": "Malformed input."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Delete a user.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "user email",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "tags": [
+                    "users endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success. Returns updated user in JSON format."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/users/login": {
+            "post": {
+                "summary": "Authenticate a user. Email and password are provided in the Authorization HTTP header (see Authentication). Upon successful login, will return the user object.",
+                "description": "Permission required - none.",
+                "tags": [
+                    "users endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/users/{email}/service": {
+            "get": {
+                "summary": "Retrieves all service properties.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "user email",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Permission required - manager.",
+                "tags": [
+                    "user's cloud service endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success. Returns array of services (always an array)"
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "Specified service not found (if no service provided, return 200 and an empty array)."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            },
+            "post": {
+                "summary": "Create a new service. Service properties are provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "user email",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Permission required - manager.",
+                "tags": [
+                    "user's cloud service endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success."
+                    },
+                    "400": {
+                        "description": "Missing serviceName."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/users/{email}/service/{serviceName}": {
+            "get": {
+                "summary": "Retrieves specified service properties.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "user email",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "serviceName",
+                        "in": "path",
+                        "description": "name of service",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Permission required - manager.",
+                "tags": [
+                    "user's cloud service endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success. Returns array of services (always an array)"
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "Specified service not found (if no service provided, return 200 and an empty array)."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            },
+            "delete": {
+                "summary": "Deletes service.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "path",
+                        "description": "user email",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "serviceName",
+                        "in": "path",
+                        "description": "name of service",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "description": "Permission required - manager.",
+                "tags": [
+                    "user's cloud service endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success."
+                    },
+                    "400": {
+                        "description": "Missing serviceName."
+                    },
+                    "401": {
+                        "description": "Invalid token."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "404": {
+                        "description": "User not found."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/admin/audit": {
+            "get": {
+                "summary": "Gets the audit log for system operations fitting the search criteria (all if none provided).",
+                "tags": [
+                    "administrator endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/admin/permissions": {
+            "get": {
+                "summary": "Gets permissions fitting the search criteria (all if none provided).",
+                "tags": [
+                    "administrator endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            },
+            "post": {
+                "summary": "Creates a new permission, or updates an existing one. Updated permission properties are provided in the request body.",
+                "tags": [
+                    "administrator endpoint"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success."
+                    },
+                    "401": {
+                        "description": "Incorrect entity, action or permission level."
+                    },
+                    "403": {
+                        "description": "Permission denied."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        },
+        "/health": {
+            "get": {
+                "summary": "Gets the current status of the service, along with service statistics.",
+                "tags": [
+                    "health"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Success."
+                    },
+                    "500": {
+                        "description": "Server error."
+                    }
+                }
+            }
+        }
+    }
+}

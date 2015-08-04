@@ -54,7 +54,11 @@
                         "in": "body",
                         "description": "item properties",
                         "required": false,
-                        "type": "string"
+                        "type": "array",
+                          "items": {
+                            "type": "integer",
+                            "format": "int64"
+                          }
                     }
                 ],
                 "tags": [

@@ -123,11 +123,11 @@
                         "type": "number"
                     },
                     {
-                    "name": "properties",
-                    "in": "body",
-                    "description": "updated item properties",
-                    "required": false,
-                    "type": "string"
+                        "name": "properties",
+                        "in": "body",
+                        "description": "updated item properties",
+                        "required": false,
+                        "type": "string"
                     }
                 ],
                 "tags": [
@@ -199,11 +199,11 @@
                         "type": "number"
                     },
                     {
-                    "name": "properties",
-                    "in": "body",
-                    "description": "updated item properties",
-                    "required": false,
-                    "type": "string"
+                        "name": "properties",
+                        "in": "body",
+                        "description": "updated item properties",
+                        "required": false,
+                        "type": "string"
                     }
                 ],
                 "tags": [
@@ -254,6 +254,15 @@
             },
             "post": {
                 "summary": "Create a new user. User properties provided in the request body.",
+                "parameters": [
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "user properties",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
                 "description": "Permission required - manager",
                 "tags": [
                     "users endpoint"
@@ -319,6 +328,13 @@
                         "description": "user email",
                         "required": true,
                         "type": "string"
+                    },
+                    {
+                        "name": "properties",
+                        "in": "body",
+                        "description": "updated user properties",
+                        "required": false,
+                        "type": "string"
                     }
                 ],
                 "tags": [
@@ -381,6 +397,22 @@
         "/users/login": {
             "post": {
                 "summary": "Authenticate a user. Email and password are provided in the Authorization HTTP header (see Authentication). Upon successful login, will return the user object.",
+                "parameters": [
+                    {
+                        "name": "email",
+                        "in": "header",
+                        "description": "user email",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "password",
+                        "in": "header",
+                        "description": "user password",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
                 "description": "Permission required - none.",
                 "tags": [
                     "users endpoint"

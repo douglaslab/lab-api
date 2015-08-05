@@ -6,7 +6,8 @@ var Schema = mongoose.Schema;
 var ServiceSchema = new Schema({
     serviceName: {type: String, required: true},
     token: {type: String, required: true},
-    additional: {type: String}
+    handle: {type: String},
+    additional: Schema.Types.Mixed
   }, {
   toObject: {
     transform: (doc, ret) => {

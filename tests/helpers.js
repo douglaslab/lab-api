@@ -10,17 +10,17 @@ var randomUserName = function() {
   return 'TEST' + Math.random().toString().slice(2, 11);
 };
 
-var generateRandomUser = function(permissionLevel) {
+var generateRandomUser = exports.generateRandomUser = function(permissionLevel) {
   return {
     name: randomUserName(),
     email: randomUserName() + '@example.com',
     password: 'blahblah',
+    pin: '47103',
+    color: '#5f94cc',
     permissionLevel: permissionLevel,
-    school: 'UCSF'
+    additional: {comment: 'test user'}
   };
 };
-
-exports.randomUserName = randomUserName;
 
 exports.generateAuthorizationHeader = function(user) {
   var util = require('util');
@@ -56,7 +56,6 @@ exports.createTestUser = function(permissionLevel, callback) {
     id: 'testuser',
     name: 'testuser'
   };
-  debug(req)
   var res = httpMocks.createResponse();
   users.create(req, res, () => {
     var result = JSON.parse(res._getData());

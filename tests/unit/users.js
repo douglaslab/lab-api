@@ -8,12 +8,7 @@ var helpers = require('../helpers');
 
 describe('Users unit tests', () => {
   should;
-  var newUser = {
-    name: helpers.randomUserName(),
-    email: helpers.randomUserName() + '@example.com',
-    password: 'blahblah',
-    school: 'UCSF'
-  };
+  var newUser = helpers.generateRandomUser();
 
   it('should Create a new user', (done) => {
     let user = JSON.parse(JSON.stringify(newUser)); //clone newUser so it won't mutate

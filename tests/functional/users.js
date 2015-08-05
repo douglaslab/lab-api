@@ -22,12 +22,7 @@ before((done) => {
 });
 
 describe('Users functional tests', () => {
-  var newUser = {
-    name: helpers.randomUserName(),
-    email: helpers.randomUserName() + '@example.com',
-    password: 'blahblah',
-    school: 'UCSF'
-  };
+  var newUser = helpers.generateRandomUser();
 
   it('should Create a new user', (done) => {
     request(process.env.TEST_URL)

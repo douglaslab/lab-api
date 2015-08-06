@@ -75,3 +75,12 @@ exports.deleteTestUser = function(email, callback) {
       callback(null, result.data);
   });
 };
+
+//parser for photo
+exports.binaryParser = function(res, callback) {
+  res.setEncoding('binary');
+  res.text = '';
+  res.on('data', chunk => {res.text += chunk; });
+  res.on('end', () => callback(null, new Buffer(res.text, 'binary')));
+};
+

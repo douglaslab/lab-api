@@ -1,6 +1,7 @@
 'use strict';
 
 const ELEMENT = 'USER';
+var fs = require('fs');
 var async = require('async');
 var util = require('util'); //TODO: util.format can be removed when Node starts supporting string templates
 var debug = require('debug')('users');
@@ -180,6 +181,44 @@ var UsersModel = function() {
         else {
           debug('user: %s not found', email);
           helper.handleError(404, util.format('user: %s not found', email), req, res);
+        }
+      }
+      return next();
+    });
+  };
+
+  /**
+   * Allow user login by Slack handle/PIN
+   * @memberof UsersModel
+   * @param  {Object}   req  Request object - email and password passed in the Authorization header
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
+  this.loginWithSlack = function(req, res, next) {
+    var handle = req.authorization.basic.username;
+    var pin = req.authorization.basic.password;
+    if(!handle || !pin) {
+      helper.handleError(401, 'incorrect Slack handle/pin', req, res);
+      return next();
+    }
+    UserModel.findOne({'services.serviceName': 'Slack', 'services.handle': handle}, (err, user) => {
+      if(err) {
+        helper.handleError(500, err, req, res);
+      }
+      else {
+        if(user) {
+          if(user.pin === pin) {
+            res.json(200, {error: false, data: user.toObject()});
+            req.user = user;
+            helper.log(req, user, ELEMENT, 'login with Slack');
+          }
+          else {
+            helper.handleError(401, 'incorrect pin', req, res);
+          }
+        }
+        else {
+          debug('user: %s not found', handle);
+          helper.handleError(404, util.format('user: %s not found', handle), req, res);
         }
       }
       return next();
@@ -393,6 +432,54 @@ var UsersModel = function() {
             else {
               res.json(200, {error: false, data: util.format('service %s deleted successfully', req.params.serviceName)});
               helper.log(req, ELEMENT, 'UPDATE', util.format('service %s deleted for user %s', req.params.serviceName, user.email));
+            }
+            return next();
+          });
+        }
+        else {
+          helper.handleError(404, util.format('user: %s not found', req.params.id), req, res);
+          return next();
+        }
+      }
+    });
+  };
+
+  this.getPhoto = function(req, res, next) {
+    UserModel.findOne({email: req.params.email}, (err, user) => {
+      if(err) {
+        helper.handleError(500, err, req, res);
+        return next();
+      }
+      else {
+        if(user) {
+          res.contentType = 'application/octet-stream';
+          res.send(user.photo);
+          return next();
+        }
+        else {
+          helper.handleError(404, util.format('user: %s not found', req.params.email), req, res);
+          return next();
+        }
+      }
+    });
+  };
+
+  this.savePhoto = function(req, res, next) {
+    UserModel.findOne({email: req.params.email}, (err, user) => {
+      if(err) {
+        helper.handleError(500, err, req, res);
+        return next();
+      }
+      else {
+        if(user) {
+          user.photo = fs.readFileSync(req.files.photo.path);
+          user.save((err2) => {
+            if(err2) {
+              helper.handleError(500, err2, req, res);
+            }
+            else {
+              res.json(200, {error: false, data: 'photo uploaded successfully'});
+              helper.log(req, ELEMENT, 'UPDATE', util.format('photo uploaded for user %s', user.email));
             }
             return next();
           });

@@ -7,15 +7,12 @@ var Service = require('./service');
 
 var UserSchema = new Schema({
     active: {type: Boolean, default: true},
-    name: {type: String, require: true},
+    name: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true, select: false},
     pin: {type: String, required: true, validate: /^\d{5}$/},
     color: {type: String},
-    photo: {
-      data: Buffer,
-      contentType: String
-    },
+    photo: {type: Buffer},
     apiKey: {type: String, required: true},
     apiSecret: {type: String, required: true},
     permissionLevel: {type: String, required: true, enum: permissionLevels, default: 'USER'},
@@ -30,6 +27,7 @@ var UserSchema = new Schema({
       delete ret._id;
       delete ret.__v;
       delete ret.password;
+      delete ret.photo; //do not return photo - use getPhoto to get the binary
     }
   }
 });

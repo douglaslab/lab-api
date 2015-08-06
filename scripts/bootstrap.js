@@ -23,10 +23,7 @@ var createDefaultAdminUser = function(callback) {
     name: 'System Admin',
     pin: '47103',
     color: '#5f94cc',
-    photo: {
-      data: fs.readFileSync(__dirname + '/logo.png'),
-      contentType: 'image/png'
-    },
+    photo: fs.readFileSync(__dirname + '/logo.png'),
     password: security.hashPassword(process.env.ADMIN_PASSWORD || 'password'),
     apiKey: security.generateRandomBytes(32),
     apiSecret: security.generateRandomBytes(32),

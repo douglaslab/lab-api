@@ -1,6 +1,7 @@
 'use strict';
 
 var debug = require('debug')('test:function:users');
+var path = require('path');
 var request = require('supertest');
 var should = require('should');
 var security = require('../../models/security');
@@ -116,10 +117,40 @@ describe('Users functional tests', () => {
       });
   });
 
+  it('should Upload user photo', (done) => {
+    let filePath = path.join(__dirname, '..', '..', 'scripts', 'logo.png');
+    request(process.env.TEST_URL)
+      .post('/users/photo/' + newUser.email)
+      .attach('photo', filePath)
+      .expect(200)
+      .end((err, res) => {
+        debug(res.body);
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        return done();
+      });
+  });
+
+  it('should Get user photo', (done) => {
+    request(process.env.TEST_URL)
+      .get('/users/photo/' + newUser.email)
+      .set('Accept', 'application/octet-stream')
+      .buffer(true)
+      .parse(helpers.binaryParser)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err);
+        should.exists(res.body.length);
+        return done();
+      });
+  });
+
   let newService = {
-    serviceName: 'Dropbox',
+    serviceName: 'Slack',
+    handle: 'jimmyTheKnife222',
     token: 'mytoken',
-    additional: 'additional info'
+    additional: {info: 'additional info'}
   };
 
   it('should create a cloud service for user', (done) => {
@@ -176,6 +207,23 @@ describe('Users functional tests', () => {
       });
   });
 
+  it('should login with Slack handle and PIN', (done) => {
+    request(process.env.TEST_URL)
+      .post('/users/loginwithslack')
+      .set('Authorization', security.generateAuthorizationHeader(newService.handle, newUser.pin))
+      .expect(200)
+      .end((err, res) => {
+        debug(res.body);
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        res.body.data.should.have.property('email');
+        res.body.data.email.should.equal(newUser.email);
+        return done();
+      });
+  });
+
   it('should delete the cloud service from user', (done) => {
     request(process.env.TEST_URL)
       .del('/users/' + newUser.email + '/service/' + newService.serviceName)
@@ -190,7 +238,6 @@ describe('Users functional tests', () => {
         return done();
       });
   });
-
 
   it('should Delete the created user', (done) => {
     request(process.env.TEST_URL)

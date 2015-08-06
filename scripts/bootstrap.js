@@ -1,14 +1,15 @@
 /* eslint-disable no-process-exit */
 'use strict';
-
+var fs = require('fs');
 var async = require('async');
 
 var connectDB = function(callback) {
   var db = require('../configs/db');
   var mongoose = require('mongoose');
 
+  console.log('connecting to ' + db.connection);
   mongoose.connect(db.connection);
-  mongoose.connection.on('open', callback);
+  mongoose.connection.once('open', callback);
   mongoose.connection.on('error', (err) => {
     console.error('connection error:', err.message);
   });
@@ -20,11 +21,14 @@ var createDefaultAdminUser = function(callback) {
   var user = {
     email: process.env.ADMIN_EMAIL || 'test@ucsf.edu',
     name: 'System Admin',
-    school: '',
+    pin: '47103',
+    color: '#5f94cc',
+    photo: fs.readFileSync(__dirname + '/logo.png'),
     password: security.hashPassword(process.env.ADMIN_PASSWORD || 'password'),
     apiKey: security.generateRandomBytes(32),
     apiSecret: security.generateRandomBytes(32),
-    permissionLevel: 'ADMIN'
+    permissionLevel: 'ADMIN',
+    addtitional: {title: 'super admin'}
   };
   UserModel.findOneAndUpdate({email: user.email}, user, {upsert: true}, (err) => {
     if(err) {

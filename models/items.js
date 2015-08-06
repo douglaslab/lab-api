@@ -62,7 +62,7 @@ var ItemsModel = function() {
     var search = Object.keys(req.query).length > 0 ? parseQueryParameters(req.query) : {};
     ItemModel.find(search, (err, items) => {
       if(err) {
-        helper.handleError(500, err, res);
+        helper.handleError(500, err, req, res);
       }
       else {
         var result = items.map(x => x.toObject());
@@ -83,19 +83,19 @@ var ItemsModel = function() {
     //verify id is legal
     var id = helper.getObjectId(req.params.id);
     if(id === null) {
-      helper.handleError(400, 'illegal item id', res);
+      helper.handleError(400, 'illegal item id', req, res);
       return next();
     }
     ItemModel.findById(id, (err, item) => {
       if(err) {
-        helper.handleError(500, err, res);
+        helper.handleError(500, err, req, res);
       }
       else {
         if(item) {
           res.json(200, {error: false, data: item.toObject()});
         }
         else {
-          helper.handleError(404, util.format('Item: %s not found', req.params.id), res);
+          helper.handleError(404, util.format('Item: %s not found', req.params.id), req, res);
         }
       }
       return next();
@@ -112,19 +112,19 @@ var ItemsModel = function() {
   this.create = function(req, res, next) {
     //verify input is not empty
     if(helper.isEmpty(req.body)) {
-      helper.handleError(400, 'malformed input', res);
+      helper.handleError(400, 'malformed input', req, res);
       return next();
     }
     var newItem = new ItemModel({properties: req.body, createdBy: req.userId});
     debug('creator %s, item %s', req.user && req.user.id, newItem);
     newItem.save((err, item) => {
       if(err) {
-        helper.handleError(500, err, res);
+        helper.handleError(500, err, req, res);
       }
       else {
         res.json(201, {error: false, data: item.toObject()});
       }
-      helper.log(req.user, ELEMENT, 'CREATE', item.id);
+      helper.log(req, ELEMENT, 'CREATE', item.id);
       return next();
     });
   };
@@ -140,19 +140,19 @@ var ItemsModel = function() {
   this.update = function(req, res, next) {
     //verify input is not empty
     if(helper.isEmpty(req.body)) {
-      helper.handleError(400, 'malformed input', res);
+      helper.handleError(400, 'malformed input', req, res);
       return next();
     }
     //verify id is legal
     let userId = req.user ? req.user.id : null;
     let id = helper.getObjectId(req.params.id);
     if(id === null) {
-      helper.handleError(400, 'illegal item id', res);
+      helper.handleError(400, 'illegal item id', req, res);
       return next();
     }
     ItemModel.findById(id, (err, item) => {
       if(err) {
-        helper.handleError(500, err, res);
+        helper.handleError(500, err, req, res);
         return next();
       }
       else {
@@ -173,17 +173,17 @@ var ItemsModel = function() {
           item.markModified('properties');
           item.save((err2, newItem) => {
             if(err2) {
-              helper.handleError(500, err2, res);
+              helper.handleError(500, err2, req, res);
             }
             else {
               res.json(200, {error: false, data: newItem.toObject()});
-              helper.log(req.user, ELEMENT, 'UPDATE', id);
+              helper.log(req, ELEMENT, 'UPDATE', id);
             }
             return next();
           });
         }
         else {
-          helper.handleError(404, util.format('Item: %s not found', req.params.id), res);
+          helper.handleError(404, util.format('Item: %s not found', req.params.id), req, res);
           return next();
         }
       }
@@ -201,21 +201,21 @@ var ItemsModel = function() {
     //verify id is legal
     var id = helper.getObjectId(req.params.id);
     if(id === null) {
-      helper.handleError(400, 'illegal item id', res);
+      helper.handleError(400, 'illegal item id', req, res);
       return next();
     }
     ItemModel.findByIdAndRemove(id, (err, item) => {
       if(err) {
-        helper.handleError(500, err, res);
+        helper.handleError(500, err, req, res);
       }
       else {
         if(item) {
           debug(item);
           res.json(200, {error: false, data: util.format('Item %s deleted successfully', item.id)});
-          helper.log(req.user, ELEMENT, 'DELETE', item.id);
+          helper.log(req, ELEMENT, 'DELETE', item.id);
         }
         else {
-          helper.handleError(404, util.format('Item: %s not found', req.params.id), res);
+          helper.handleError(404, util.format('Item: %s not found', req.params.id), req, res);
         }
       }
       return next();

@@ -43,7 +43,7 @@ var AdminModel = function() {
     debug(criteria, search);
     AuditModel.find(search).sort('-created').exec((err, result) => {
       if(err) {
-        helper.handleError(500, err, res);
+        helper.handleError(500, err, req, res);
       }
       else {
         res.json(200, {error: false, data: result.map(item => item.toObject())});
@@ -65,12 +65,12 @@ var AdminModel = function() {
     debug(search);
     PermissionModel.find(search, (err, result) => {
       if(err) {
-        helper.handleError(500, err, res);
+        helper.handleError(500, err, req, res);
       }
       else {
         if(result) {
           res.json(200, {error: false, data: result.map(item => item.toObject())});
-          helper.log(req.user, ELEMENT, 'READ');
+          helper.log(req, ELEMENT, 'READ');
         }
       }
       return next();
@@ -96,7 +96,7 @@ var AdminModel = function() {
     PermissionModel.findOne(search, (err, result) => {
       var action = '';
       if(err) {
-        helper.handleError(500, err, res);
+        helper.handleError(500, err, req, res);
         return next();
       }
       else if(result) {
@@ -109,13 +109,13 @@ var AdminModel = function() {
       }
       result.save((err2, result2) => {
         if(err2) {
-          helper.handleError(401, err2, res);
+          helper.handleError(401, err2, req, res);
         }
         else {
           debug(result2);
           if(result2) {
             res.json(201, {error: false, data: result2.toObject()});
-            helper.log(req.user, ELEMENT, action, util.format('%s %s %s', result2.element, result2.action, result2.permissionRequired));
+            helper.log(req, ELEMENT, action, util.format('%s %s %s', result2.element, result2.action, result2.permissionRequired));
           }
         }
         return next();

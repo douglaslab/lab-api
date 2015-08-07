@@ -7,192 +7,9 @@ Developers: jump to [installation instructions](#installation).
 
 ## The API
 
-The API runs at the root (`/`) of the server. *(We have not decided yet how to treat the root itself)*
-To use the API, an authentication header must be provided by the client (see [Authorization](#authorization)).<br>
-Currently supported endpoints:
+The API runs at the root (`/`) of the server. *(The root itself returns an error)*.
 
-### `/items` - inventory endpoint
-
-- `GET /items` - get all items fitting the search criteria (all if none provided).
-  - Possible response codes:
-      - 200 - success. Returns array of items in JSON format.
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 500 - server error.
-  - Search criteria:
-      - values are specified as a query string in the form of `field1=value1&field2=value2...`
-      - `operator=or|and` - (`and` by default)
-      - `ignorecase=false|true` - (`true` by default)
-      - if the search string is missing, all items will be returned
-- `GET /items/:id` - get item by the id provided.
-  - Possible response codes:
-      - 200 - success. Returns item in JSON format.
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - item not found.
-      - 500 - server error.
-- `POST /items` - create a new item. Item properties are provided in the request body.
-  - Possible response codes:
-      - 201 - success. Returns new item in JSON format.
-      - 400 - malformed input
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 500 - server error.
-- `PUT /items/:id` - update an item. Updated item properties are provided in the request body.
-  - Possible response codes:
-      - 200 - success. Returns updated item in JSON format.
-      - 400 - malformed input
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - item not found.
-      - 500 - server error.
-  - Note: this adds new properties, or replaces existing properties, but does not remove properties.
-- `PUT /items/:id/true` - replace all properties of an item. Updated item properties are provided in the request body.
-  - Possible response codes:
-      - 200 - success. Returns updated item in JSON format.
-      - 400 - malformed input
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - item not found.
-      - 500 - server error.
-  - Note: this replaces all existing properties with provided properties.
-- `DELETE /items/:id` - delete an item.
-  - Possible response codes:
-      - 200 - success.
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - item not found.
-      - 500 - server error.
-
-### `/users` - users endpoint
-
-- `GET /users` - get all users.
-  - Possible response codes:
-      - 200 - success. Returns array of users in JSON format.
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 500 - server error.
-- `GET /users/:email` - get user by the email provided.
-  - Possible response codes:
-      - 200 - success. Returns user in JSON format.
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - user not found.
-      - 500 - server error.
-- `POST /users` - create a new user. User properties are provided in the request body.
-  - Permission required: `MANAGER`
-  - Possible response codes:
-      - 201 - success. Returns new user in JSON format.
-      - 400 - malformed input
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 500 - server error.
-- `PUT /users/:email` - update a user. Updated user properties are provided in the request body.
-  - Possible response codes:
-      - 200 - success. Returns updated user in JSON format.
-      - 400 - malformed input
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - user not found.
-      - 500 - server error.
-- `DELETE /users/:email` - delete a user.
-  - Possible response codes:
-      - 200 - success.
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - user not found.
-      - 500 - server error.
-- `POST /users/login` - authenticate a user. Email and password are provided in the `Authorization` HTTP header (see [Authentication](#authentication)). Upon successful login, wil return the user object.
-  - Permission required: **none**
-  - Possible response codes:
-      - 200 - success.
-      - 401 - incorrect email or password.
-      - 404 - user not found.
-      - 500 - server error.
-
-### `/users/:email/service` - user's cloud service endpoint
-
-- `GET /users/:email/service` - retrieves all services properties.
-  - Permission required: `MANAGER`
-  - Possible response codes:
-      - 200 - success. Returns array of services (always an array).
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - user not found.
-      - 404 - specified service not found (if no service provided, return 200 and empty array).
-      - 500 - server error.
-- `GET /users/:email/service/:serviceName` - retrieves specified service properties.
-  - Permission required: `MANAGER`
-  - Possible response codes:
-      - 200 - success. Returns array of services (always an array).
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - user not found.
-      - 404 - specified service not found (if no service provided, return 200 and empty array).
-      - 500 - server error.
-- `POST /users/:email/service` - create a new service. Service properties are provided in the request body.
-  - Permission required: `MANAGER`
-  - Possible response codes:
-      - 201 - success.
-      - 400 - missing serviceName.
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - user not found.
-      - 500 - server error.
-- `DELETE /users/:email/service/:serviceName` - deletes service.
-  - Permission required: `MANAGER`
-  - Possible response codes:
-      - 200 - success.
-      - 400 - missing serviceName.
-      - 401 - invalid token.
-      - 403 - permission denied.
-      - 404 - user not found.
-      - 500 - server error.
-
-### `/admin` - administrator endpoint
-
-- `GET /admin/audit` - gets the audit log for system operations fitting the search criteria (all if none provided).
-  - Possible response codes:
-      - 200 - success.
-      - 403 - permission denied.
-      - 500 - server error.
-- `GET /admin/permissions` - gets permissions fitting the search criteria (all if none provided).
-  - Possible response codes:
-      - 200 - success.
-      - 403 - permission denied.
-      - 500 - server error.
-- `POST /admin/permissions` - creates a new permission, or updates an existing one. Updated permission properties are provided in the request body.
-  - Possible response codes:
-      - 201 - success.
-      - 401 - incorrect entity, action or permission level
-      - 403 - permission denied.
-      - 500 - server error.
-
-### `/health` - service statistics endpoint
-
-- `GET /health` - gets the current status of the service, along with service statistics.
-  - Permission required: **none**
-  - Possible response codes:
-      - 200 - success.
-      - 500 - server error.
-
-### Permissions required
-
-A permission is a 3-tuple of {element, action, permission level required}.
-
-Currently, there system recognizes:
-- 4 types of elements (item, user, permission, log)
-- 4 types of actions (create, read, update, delete)
-- 3 types of permission levels (user, manager, admin)
-
-The default permission matrix is:
-
-|                | CREATE | READ    | UPDATE | DELETE  |
-|----------------|--------|---------|--------|---------|
-| **ITEM**       | USER   | USER    | USER   | USER    |
-| **USER**       | ADMIN  | MANAGER | ADMIN  | ADMIN   |
-| **PERMISSION** | ADMIN  | ADMIN   | ADMIN  | N/A     |
-| **LOG**        | N/A    | MANAGER | MANGER | MANAGER |
+For a full documentation of the available endpoints and functionality, please refer to our [Swagger documentation](http://douglaslab.github.io/lab-api/). It is hosted on the [gh-pages branch](https://github.com/douglaslab/lab-api/tree/gh-pages) of this repo.
 
 ### Authorization
 
@@ -222,6 +39,26 @@ var util = require('util');
 var hash = new Buffer(util.format('%s:%s', email, password)).toString('base64');
 var header = {'Authorization': util.format('Basic %s', hash)};
 ```
+
+### Permissions required
+
+A permission is a 3-tuple of {element, action, permission level required}.
+
+Currently, there system recognizes:
+- 4 types of elements (item, user, permission, log)
+- 4 types of actions (create, read, update, delete)
+- 3 types of permission levels (user, manager, admin)
+
+The default permission matrix is:
+
+|                | CREATE   | READ    | UPDATE  | DELETE  |
+|----------------|----------|---------|---------|---------|
+| **ITEM**       | USER     | USER    | USER    | USER    |
+| **USER**       | MANAGER  | MANAGER | MANAGER | ADMIN   |
+| **PERMISSION** | ADMIN    | ADMIN   | ADMIN   | N/A     |
+| **LOG**        | N/A      | MANAGER | MANGER  | MANAGER |
+
+The exception to the rule is: a user can READ and UPDATE **their own** USER element.
 
 ## Installation
 
@@ -262,7 +99,7 @@ $ node --harmony scripts/bootstrap
 
 After running it, verify that your `users` and `permissions` collections are full.
 
-**Tip**: you can run the script with `NODE_ENV=staging` or `NODE_ENV=production` to load the diffrent databases but **make sure you know what you're doing as this operation is irreversible!**.
+**Tip**: you can run the script with `NODE_ENV=staging` or `NODE_ENV=production` to load the different databases but **make sure you know what you're doing as this operation is irreversible!**.
 
 ## Running the service
 

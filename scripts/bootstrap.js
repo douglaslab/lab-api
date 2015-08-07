@@ -43,10 +43,10 @@ var resetPermissions = function(callback) {
   var entities = require('../configs/service').entities;
   var levels = [
     //Create, Read, Update, delete
-    ['USER', 'USER', 'USER', 'USER'],         //item
-    ['ADMIN', 'MANAGER', 'ADMIN', 'ADMIN'],   //user
-    ['ADMIN', 'ADMIN', 'ADMIN', 'ADMIN'],     //permission
-    ['USER', 'MANAGER', 'MANAGER', 'MANAGER'] //log
+    ['USER', 'USER', 'USER', 'USER'],             //item
+    ['MANAGER', 'MANAGER', 'MANAGER', 'ADMIN'],   //user
+    ['ADMIN', 'ADMIN', 'ADMIN', 'ADMIN'],         //permission
+    ['USER', 'MANAGER', 'MANAGER', 'MANAGER']     //log
   ];
   var permissions = [];
 

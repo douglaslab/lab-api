@@ -117,11 +117,12 @@ var UsersModel = function() {
                   debug(user);
                   if(security.validateToken(header.token, user.apiKey, user.apiSecret, header.ts)) {
                     debug(user.permissionLevel, requiredPermissionLevel);
-                    //a special paermisision case: a user trying to update itself
+                    //a special paermisision case: a user operating on their own record is allowed (except deleting it)
                     if(checkPermissionLevel(user.permissionLevel, requiredPermissionLevel) ||
-                      (element === 'USER' && action === 'UPDATE' && user.email === req.params.email)) {
+                      (element === 'USER' && user.email === req.params.email && action !== 'DELETE')) {
                       req.user = {
                         id: helper.getObjectId(user._id),
+                        active: user.active,
                         name: user.name,
                         email: user.email,
                         permissionLevel: user.permissionLevel
@@ -163,7 +164,7 @@ var UsersModel = function() {
       helper.handleError(401, 'incorrect email/password', req, res);
       return next();
     }
-    UserModel.findOne({email: email}, '+password', (err, user) => {
+    UserModel.findOne({email: email, active: true}, '+password', (err, user) => {
       if(err) {
         helper.handleError(500, err, req, res);
       }
@@ -201,7 +202,7 @@ var UsersModel = function() {
       helper.handleError(401, 'incorrect Slack handle/pin', req, res);
       return next();
     }
-    UserModel.findOne({'services.serviceName': 'Slack', 'services.handle': handle}, (err, user) => {
+    UserModel.findOne({active: true, 'services.serviceName': 'Slack', 'services.handle': handle}, (err, user) => {
       if(err) {
         helper.handleError(500, err, req, res);
       }
@@ -296,7 +297,32 @@ var UsersModel = function() {
   };
 
   /**
-   * Delete a user
+   * Activate/Deactivate a user
+   * @memberof UsersModel
+   * @param  {Object}   req  Request object - params contains email
+   * @param  {Object}   res  Response object
+   * @param  {Function} next Next operation
+   */
+  this.changeUserActivation = function(req, res, next) {
+    UserModel.findOneAndUpdate({email: req.params.email}, {active: req.params.active}, {new: true}, (err, user) => {
+      if(err) {
+        helper.handleError(500, err, req, res);
+      }
+      else {
+        if(user) {
+          res.json(200, {error: false, data: util.format('user %s %s', user.email, user.active ? 'activated' : 'deactivated')});
+          helper.log(req, ELEMENT, 'UPDATE', user.email);
+        }
+        else {
+          helper.handleError(404, util.format('User: %s not found', req.params.email), req, res);
+        }
+      }
+      return next();
+    });
+  };
+
+  /**
+   * Delete a user - physically
    * @memberof UsersModel
    * @param  {Object}   req  Request object - params contains email
    * @param  {Object}   res  Response object

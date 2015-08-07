@@ -120,7 +120,8 @@ describe('Users functional tests', () => {
   it('should Upload user photo', (done) => {
     let filePath = path.join(__dirname, '..', '..', 'scripts', 'logo.png');
     request(process.env.TEST_URL)
-      .post('/users/photo/' + newUser.email)
+      .put('/users/' + newUser.email + '/photo')
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .attach('photo', filePath)
       .expect(200)
       .end((err, res) => {
@@ -134,7 +135,8 @@ describe('Users functional tests', () => {
 
   it('should Get user photo', (done) => {
     request(process.env.TEST_URL)
-      .get('/users/photo/' + newUser.email)
+      .get('/users/' + newUser.email + '/photo')
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
       .set('Accept', 'application/octet-stream')
       .buffer(true)
       .parse(helpers.binaryParser)
@@ -235,6 +237,23 @@ describe('Users functional tests', () => {
         should.not.exist(err);
         res.body.should.have.property('error');
         res.body.error.should.be.false;
+        return done();
+      });
+  });
+
+  it('should Deactivate the user', (done) => {
+    request(process.env.TEST_URL)
+      .put('/users/' + newUser.email + '/active/false')
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        debug(res.body);
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        res.body.data.indexOf('deactivate').should.not.equal(-1);
         return done();
       });
   });

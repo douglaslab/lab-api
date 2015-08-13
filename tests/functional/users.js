@@ -102,7 +102,7 @@ describe('Users functional tests', () => {
     request(process.env.TEST_URL)
       .put('/users/' + newUser.email)
       .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
-      .send(newUser)
+      .send({name: newUser.name})
       .expect('Content-Type', /json/)
       .expect(200)
       .end((err, res) => {

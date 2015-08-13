@@ -277,7 +277,9 @@ var UsersModel = function() {
       helper.handleError(400, 'malformed input', req, res);
       return next();
     }
-    updated.password = security.hashPassword(updated.password);
+    if(updated.password) {
+      updated.password = security.hashPassword(updated.password);
+    }
     updated.modified = Date.now();
     UserModel.findOneAndUpdate({email: req.params.email}, req.body, {new: true}, (err, updatedUser) => {
       if(err) {

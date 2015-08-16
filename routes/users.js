@@ -6,6 +6,7 @@ module.exports = function(server) {
   // open access points
   server.post('/users/login', users.login);
   server.post('/users/loginwithslack', users.loginWithSlack);
+  server.post('/users/new', users.create);
   // protected access points
   server.get('/users', users.validateUser(ELEMENT, 'READ'), users.findAll);
   server.get('/users/:email', users.validateUser(ELEMENT, 'READ'), users.findByEmail);

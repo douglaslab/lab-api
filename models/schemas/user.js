@@ -12,7 +12,7 @@ var UserSchema = new Schema({
     password: {type: String, required: true, select: false},
     pin: {type: String, required: true, validate: /^\d{5}$/},
     color: {type: String, default: '#49a5ce'},
-    photo: {type: Buffer},
+    photo: {type: Buffer, default: ''},
     apiKey: {type: String, required: true},
     apiSecret: {type: String, required: true},
     permissionLevel: {type: String, required: true, enum: permissionLevels, default: 'USER'},

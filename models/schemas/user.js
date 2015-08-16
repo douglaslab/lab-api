@@ -11,7 +11,7 @@ var UserSchema = new Schema({
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true, select: false},
     pin: {type: String, required: true, validate: /^\d{5}$/},
-    color: {type: String},
+    color: {type: String, default: '#49a5ce'},
     photo: {type: Buffer},
     apiKey: {type: String, required: true},
     apiSecret: {type: String, required: true},

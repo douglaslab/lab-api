@@ -480,9 +480,15 @@ var UsersModel = function() {
       }
       else {
         if(user) {
-          res.contentType = 'application/octet-stream';
-          res.send(user.photo);
-          return next();
+          if(user.photo.length) {
+            res.contentType = 'application/octet-stream';
+            res.send(user.photo);
+            return next();
+          }
+          else {
+            helper.handleError(404, util.format('user: %s has no photo', req.params.email), req, res);
+            return next();
+          }
         }
         else {
           helper.handleError(404, util.format('user: %s not found', req.params.email), req, res);

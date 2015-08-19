@@ -6,7 +6,7 @@ var Schema = mongoose.Schema;
 var Service = require('./service');
 
 var UserSchema = new Schema({
-    active: {type: Boolean, default: true},
+    active: {type: Boolean, required: true, default: true},
     name: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true, select: false},

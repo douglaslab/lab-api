@@ -191,7 +191,7 @@ var UsersModel = function() {
   /**
    * Allow user login by Slack handle/PIN
    * @memberof UsersModel
-   * @param  {Object}   req  Request object - email and password passed in the Authorization header
+   * @param  {Object}   req  Request object - handle and pin passed in the Authorization header
    * @param  {Object}   res  Response object
    * @param  {Function} next Next operation
    */
@@ -202,7 +202,7 @@ var UsersModel = function() {
       helper.handleError(401, 'incorrect Slack handle/pin', req, res);
       return next();
     }
-    UserModel.findOne({active: true, 'services.serviceName': 'Slack', 'services.handle': handle}, (err, user) => {
+    UserModel.findOne({active: true, 'services.serviceName': {$regex: /Slack/i}, 'services.handle': handle}, (err, user) => {
       if(err) {
         helper.handleError(500, err, req, res);
       }

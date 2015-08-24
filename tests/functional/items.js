@@ -87,6 +87,24 @@ describe('Items functional tests', () => {
       });
   });
 
+  it('should Retrieve all items with metric units', (done) => {
+    request(process.env.TEST_URL)
+      .get('/items?units=metric')
+      .set('X-API-Authorization', helpers.generateAuthorizationHeader(testUser))
+      .expect('Content-Type', /json/)
+      .expect(200)
+      .end((err, res) => {
+        should.not.exist(err);
+        res.body.should.have.property('error');
+        res.body.error.should.be.false;
+        res.body.should.have.property('data');
+        res.body.data.should.be.an.instanceOf(Array);
+        res.body.data.filter(item => item.id === id).should.have.lengthOf(1);
+        debug(res.body);
+        return done();
+      });
+  });
+
   it('should Update the created item', (done) => {
     newItem.name = 'updated';
     request(process.env.TEST_URL)

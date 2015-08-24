@@ -92,6 +92,24 @@ describe('Items unit tests', () => {
 
   it('should Retrieve all items', (done) => {
     let req = httpMocks.createRequest();
+    req.user = {name: 'testuser', id: userId};  //for createdBy
+    let res = httpMocks.createResponse();
+    items.findAll(req, res, () => {
+      let result = JSON.parse(res._getData());
+      debug(result);
+      res.statusCode.should.equal(200);
+      result.should.have.property('error');
+      result.error.should.be.false;
+      result.should.have.property('data');
+      result.data.should.be.an.instanceOf(Array);
+      result.data.filter(item => item.id === id).should.have.lengthOf(1);
+      return done();
+    });
+  });
+
+  it('should Retrieve all items with metric units', (done) => {
+    let req = httpMocks.createRequest({query: {units: 'metric'}});
+    req.user = {name: 'testuser', id: userId};  //for createdBy
     let res = httpMocks.createResponse();
     items.findAll(req, res, () => {
       let result = JSON.parse(res._getData());

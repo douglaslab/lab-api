@@ -21,26 +21,52 @@ var ItemsModel = function() {
    * @param  {Object} query query string object, containing key and values
    * @return {Object}       Mongoose search object
    */
-  var parseQueryParameters = function(query) {
-    var operator = '$and';
-    var ignoreCase = true;
-    var search = {};
+  var parseQueryParameters = function(req) {
+    let operator = '$and';
+    let ignoreCase = true;
+    let query = req.query;
+    let userId = req.user.id;
+    let userLimit = {'$or': [{createdBy: userId}, {modifiedBy: userId}]};
+    let search = {};
 
-    if(query.operator) {
-      operator = '$' + query.operator;
-      delete query.operator;
+    //handle empty query
+    if(!Object.keys(query).length) {
+      if(req.user.permissionLevel === 'USER') {
+        search = userLimit;
+      }
+      else {
+        search = {};
+      }
     }
-    if(query.ignorecase) {
-      ignoreCase = query.ignorecase;
-      delete query.ignorecase;
-    }
+    else {
+      //build search fields, with operator
+      let fields = {};
+      if(query.operator) {
+        operator = '$' + query.operator;
+        delete query.operator;
+      }
+      if(query.ignorecase) {
+        ignoreCase = query.ignorecase;
+        delete query.ignorecase;
+      }
+      fields[operator] = Object.keys(query).map(key => {
+        var obj = {};
+        obj['properties.' + key] = ignoreCase ? {'$regex': new RegExp(query[key], 'i') } : query[key];
+        return obj;
+      });
 
-    search[operator] = Object.keys(query).map(key => {
-      var obj = {};
-      obj['properties.' + key] = ignoreCase ? {'$regex': new RegExp(query[key], 'i') } : query[key];
-      return obj;
-    });
-    debug(search);
+      if(req.user.permissionLevel === 'USER') {
+        if(fields[operator].length === 1) {
+          search = {'$and': [fields[operator][0], userLimit]};
+        }
+        else {
+          search = {'$and': [fields, userLimit]};
+        }
+      }
+      else {
+        search = fields;
+      }
+    }
     return search;
   };
 
@@ -59,7 +85,8 @@ var ItemsModel = function() {
    * @param  {Function} next next operation
    */
   this.findAll = function(req, res, next) {
-    var search = Object.keys(req.query).length > 0 ? parseQueryParameters(req.query) : {};
+    var search = parseQueryParameters(req);
+    debug('search criteria', require('util').inspect(parseQueryParameters(req), true, 4, true));
     ItemModel.find(search, (err, items) => {
       if(err) {
         helper.handleError(500, err, req, res);
@@ -115,8 +142,10 @@ var ItemsModel = function() {
       helper.handleError(400, 'malformed input', req, res);
       return next();
     }
-    var newItem = new ItemModel({properties: req.body, createdBy: req.userId});
-    debug('creator %s, item %s', req.user && req.user.id, newItem);
+    //verify id is legal
+    let userId = req.user ? req.user.id : null;
+    var newItem = new ItemModel({properties: req.body, createdBy: userId});
+    debug('creator %s, item %s', userId, newItem);
     newItem.save((err, item) => {
       if(err) {
         helper.handleError(500, err, req, res);

@@ -2,7 +2,10 @@
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/douglaslab/lab-api)
 
-A RESTful API for Douglas Lab Information Management System.<br>
+A RESTful API for Douglas Lab Information Management System.
+
+**Update 9/11/2015:** Lab-API now requires Node 4.0. This means we no longer need the `--harmony` flags all over, because ES2015 (formerly ES6) is fully supported!
+
 Developers: jump to [installation instructions](#installation).
 
 ## The API
@@ -94,7 +97,7 @@ To fill the database with at least one admin-level user, and basic service permi
 **Verify that your database is up and running before you run this!**
 
 ```console
-$ node --harmony scripts/bootstrap
+$ node scripts/bootstrap
 ```
 
 After running it, verify that your `users` and `permissions` collections are full.
@@ -111,13 +114,13 @@ After running it, verify that your `users` and `permissions` collections are ful
 ## Testing, linting, documentation
 
 1. To run all tests, type `npm test`.
-1. To run a specific test, type `mocha --harmony tests/<test name>`.
+1. To run a specific test, type `mocha tests/<test name>`.
 1. To lint the code, type `npm run lint`.
 1. To generate documentation, type `npm run doc` and then open [docs/index.html](./docs/index.html) in your browser.
 
 ## Technology stack
 
-- [Node.JS](https://nodejs.org/) - V8 based JavaScript server engine. Used with the `--harmony` flag, to allow ES6 features.
+- [Node.JS](https://nodejs.org/) - Now using v4.0 and up to make use of ES2015 features.
 - [MongoDB](https://www.mongodb.org/) - NoSQL database.
 - [Restify](http://mcavage.me/node-restify/) - framework for RESTful services.
 - [Mongoose](http://mongoosejs.com/index.html) - ODM for MongoDB.

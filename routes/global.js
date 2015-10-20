@@ -1,13 +1,13 @@
 'use strict';
 
 module.exports = function(server, dbUp) {
+  server.get('/', (req, res, next) => res.redirect('/health', next));
   server.get('/health', (req, res) => {
     let recentVersion = Array.isArray(server.versions) ? server.versions[server.versions.length - 1] : server.versions;
     var status = {
       name: server.name,
       version: recentVersion,
-      online: dbUp,
-      message: '',
+      database: dbUp ? 'online' : 'offline',
       platform: process.platform,
       architecture: process.arch,
       memoryUsage: process.memoryUsage()

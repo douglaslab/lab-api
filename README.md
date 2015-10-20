@@ -10,7 +10,7 @@ Developers: jump to [installation instructions](#installation).
 
 ## The API
 
-The API runs at the root (`/`) of the server. *(The root itself returns an error)*.
+The API runs at the root (`/`) of the server. *(The root itself redirects to `/health`)*.
 
 For a full documentation of the available endpoints and functionality, please refer to our [Swagger documentation](http://douglaslab.github.io/lab-api/). It is hosted on the [gh-pages branch](https://github.com/douglaslab/lab-api/tree/gh-pages) of this repo.
 

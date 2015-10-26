@@ -37,7 +37,7 @@ var UsersModel = function() {
    * @param  {Function} next Next operation
    */
   this.findAll = function(req, res, next) {
-    UserModel.find({}, '+created +modified', (err, users) => {
+    UserModel.find({}, (err, users) => {
       if(err) {
         helper.handleError(500, err, req, res);
       }

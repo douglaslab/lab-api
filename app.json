@@ -6,7 +6,7 @@
   "repository": "https://github.com/douglaslab/lab-api",
   "env": {
     "DB_CONNECTION": {
-      "description": "MongoDB connection url (mongo://user:password@database_url)",
+      "description": "MongoDB connection string (mongodb://user:password@database_url/database_name)",
       "required": true
     },
     "ADMIN_EMAIL": {

@@ -17,8 +17,8 @@ var UserSchema = new Schema({
     apiSecret: {type: String, required: true},
     permissionLevel: {type: String, required: true, enum: permissionLevels, default: 'USER'},
     services: [Service],
-    created: {type: Date, default: Date.now, select: false},
-    modified: {type: Date, default: Date.now, select: false},
+    created: {type: Date, default: Date.now},
+    modified: {type: Date, default: Date.now},
     additional: Schema.Types.Mixed
   }, {
   toObject: {

@@ -245,11 +245,10 @@ var UsersModel = function() {
     newUser.password = security.hashPassword(req.body.password);
     newUser.apiKey = security.generateRandomBytes(32);
     newUser.apiSecret = security.generateRandomBytes(32);
-    newUser.active = true;
     newUser = new UserModel(newUser);
     newUser.save((err, user) => {
       if(err) {
-        if(err.message.contains('duplicate')) {
+        if(err.message.indexOf('duplicate') !== -1) {
           helper.handleError(400, util.format('user with email %s already exists', newUser.email), req, res);
         }
         else {

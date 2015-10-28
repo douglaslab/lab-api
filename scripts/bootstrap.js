@@ -19,6 +19,7 @@ var createDefaultAdminUser = function(callback) {
   var UserModel = require('../models/schemas/user');
   var security = require('../models/security');
   var user = {
+    active: true,
     email: process.env.ADMIN_EMAIL || 'test@ucsf.edu',
     name: 'System Admin',
     pin: '47103',

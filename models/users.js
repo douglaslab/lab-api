@@ -245,6 +245,7 @@ var UsersModel = function() {
     newUser.password = security.hashPassword(req.body.password);
     newUser.apiKey = security.generateRandomBytes(32);
     newUser.apiSecret = security.generateRandomBytes(32);
+    newUser.active = true;
     newUser = new UserModel(newUser);
     newUser.save((err, user) => {
       if(err) {

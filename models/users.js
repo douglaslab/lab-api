@@ -248,7 +248,7 @@ var UsersModel = function() {
     newUser = new UserModel(newUser);
     newUser.save((err, user) => {
       if(err) {
-        if(err.message.contains('duplicate')) {
+        if(err.message.indexOf('duplicate') !== -1) {
           helper.handleError(400, util.format('user with email %s already exists', newUser.email), req, res);
         }
         else {

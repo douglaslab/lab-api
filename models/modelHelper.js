@@ -45,6 +45,9 @@ var ModelHelper = function() {
   this.handleError = function(errorCode, err, req, res) {
     let logger = req.log || console;
     logger.error(err);
+    if(err.errors) {  //handle multiple Mongoose errors
+      logger.error(err.errors);
+    }
     debug(err);
     res.json(errorCode, {error: true, data: (typeof err === 'string') ? err : err.message});
   };
